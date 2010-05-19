@@ -1,0 +1,97 @@
+<?php
+   $html->addCrumb('view records','/bibs/index');
+   $html->addCrumb('remove duplicate records','/bibs/dedupselect');
+
+
+?>
+
+<table id="results">
+<tr>
+    <th><small>#</small></th>
+    <th><small>Title</small></th>
+    <th><small>001</small></th>
+    <th><small>008</small></th>
+    <th><small>ISSN</small></th>
+    <th><small>Publisher</small></th>
+    <th><small>Matches</small></th>
+    <th><small>View</small></th>
+    <th><small>Master?</small></th>
+
+</tr>
+
+<!--?php var_dump($Todedups);?-->
+
+<?php foreach ($Todedups as $row): ?>
+
+<tr>
+    <td><small><a id="row<?php echo $row['Bib']['id'] ?>"></a><?php echo $row['Bib']['id'] ?></small></td>
+    <td><small><?php if(!$row['Bib']['title']) echo '&nbsp;'; else echo str_replace('@@@a','',$row['Bib']['title']); ?></small></td>
+    <td><small><?php if(!$row['Bib']['001']) echo '&nbsp;'; else echo $row['Bib']['001']; ?></small></td>
+    <td><small><?php if(!$row['Bib']['008']) echo '&nbsp;'; else echo $row['Bib']['008']; ?></small></td>
+    <td><small><?php if(!$row['Bib']['022']) echo '&nbsp;'; else echo $row['Bib']['022']; ?></small></td>
+    <td><small><?php if(!$row['Bib']['pub']) echo '&nbsp;'; else echo $row['Bib']['pub']; ?></small></td>
+
+   <td>   
+   <small>
+         <?php          
+		 $holdings = $row['Holding'];
+		 foreach ($holdings as $holding)
+		 {
+		    //echo $holding['place'];
+		    echo $matchlinker->generate_opac_links($holding['place'], $holding['035'], $holding['oclc'], $row['Bib']['001']);
+		    echo "<br>";
+		 }                  
+         ?>
+    </small>    
+   </td>
+      
+
+
+    <td><small>        
+        <?php echo $html->link('View','/bibs/view/'.$row['Bib']['id']) ?>
+        </small>
+     </td>
+     <td><small>
+
+		<form method="post" action="<?php echo $html->url('/bibs/dedup2')?>">
+
+                <?php 
+                    // gets all the id's except the one selected here to be merged
+                    $tomerge = "";
+		    foreach ($Todedups as $todelete)
+		    {
+		          if ($todelete['Bib']['id'] != $row['Bib']['id'])
+		          {
+		              $tomerge = $tomerge . $todelete['Bib']['id'] . "#";
+		          }
+		    }
+
+		?>
+		
+		<input type="hidden" name="idtodel" value="<?php echo $tomerge ?>" />
+		
+		
+		
+		<input type="hidden" name="idtokeep"  value="<?php echo $row['Bib']['id']?>" />       
+		<?php echo $html->submit('Use this') ?>
+
+		</form>
+
+       </small>
+    </td>
+</tr>
+<?php endforeach; ?>
+
+
+
+
+
+
+</table>
+
+<br />
+<br />
+
+
+</table>
+

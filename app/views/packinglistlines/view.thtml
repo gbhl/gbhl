@@ -1,0 +1,66 @@
+<?php
+$id = $mypackinglistline['Packinglistline']['id'];
+$pklistid = $mypackinglistline['Packinglistline']['packinglist_id'];
+$html->addCrumb('back to packing list records',"/packinglists/edit/$pklistid");
+$html->addCrumb('view line record',"/packinglistlines/view/$id"); 
+
+
+$mypackinglistlines = $mypackinglistline['Packinglistline'];
+
+
+
+?>
+
+<h1><?php echo "Line  " . $mypackinglistline['Packinglistline']['id'] . " for Packing list " . $mypackinglistline['Packinglistline']['packinglist_id']?></h1>
+
+
+	 
+     
+	 
+	<small><?php echo "(for Packing list " .  $mypackinglistline['Packinglistline']['packinglist_id'] . " created: " . $mypackinglistline['Packinglist']['create_date'] . " by Library: " . $mypackinglistline['Packinglist']['library'] . ")"; ?></small>     
+
+
+
+<p><small class="standoutlabel">Title: </small><small class="standoutcontent"><?php if(!$mypackinglistline['Title']['title']) echo '&nbsp;'; else echo $mypackinglistline['Title']['title']; ?></small></p>
+
+<p><small class="standoutlabel">Catkey: </small><small class="standoutcontent"><?php if(!$mypackinglistline['Title']['catkey']) echo '&nbsp;'; else echo $mypackinglistline['Title']['catkey']; ?></small></p>
+
+<hr />
+
+<p><small class="standoutlabel">Chronology Start: </small><small class="standoutcontent"><?php if(!$mypackinglistline['Packinglistline']['chronology_start']) echo '&nbsp;'; else echo $mypackinglistline['Packinglistline']['chronology_start']; ?></small></p>
+
+<p><small class="standoutlabel">Chronology End: </small><small class="standoutcontent"><?php if(!$mypackinglistline['Packinglistline']['chronology_end']) echo '&nbsp;'; else echo $mypackinglistline['Packinglistline']['chronology_end']; ?></small></p>
+
+<hr />
+
+<p><small class="standoutlabel">Enumeration Start: </small><small class="standoutcontent"><?php if(!$mypackinglistline['Packinglistline']['enum_start']) echo '&nbsp;'; else echo $mypackinglistline['Packinglistline']['enum_start']; ?></small></p>
+
+<p><small class="standoutlabel">Enumeration End: </small><small class="standoutcontent"><?php if(!$mypackinglistline['Packinglistline']['enum_end']) echo '&nbsp;'; else echo $mypackinglistline['Packinglistline']['enum_end']; ?></small></p>
+
+<hr />
+
+<p><small class="standoutlabel">Series: </small><small class="standoutcontent"><?php if(!$mypackinglistline['Packinglistline']['series']) echo '&nbsp;'; else echo $mypackinglistline['Packinglistline']['series']; ?></small></p>
+
+<hr />
+
+<p><small>Line Status: <?php echo $Packinglistlinestatuses[$mypackinglistline['Packinglistline']['line_status']]?></small></p>
+
+
+<form method="post" action="<?php echo $html->url('/packinglistlines/editlimited/' . $mypackinglistline['Packinglistline']['id'])?>">
+<?php echo $html->hidden('Packinglistline/id', array('value' => $mypackinglistline['Packinglistline']['id'])); ?>
+<?php echo $html->hidden('Packinglistline/packinglist_id', array('value' => $mypackinglistline['Packinglistline']['packinglist_id'])); ?>
+
+<p><small>IA reject reason: 
+
+<?php  echo  $html->selectTag('Packinglistline/ia_reject_reason', $Iarejectreasonstatuses, $mypackinglistline['Packinglistline']['ia_reject_reason'] ,array(),NULL,0);?>                        
+
+</small></p>
+
+<p> 
+<?php echo $html->submit('[U]pdate reason', array('accesskey' => 'u')) ?><br/>
+</p>
+
+</form>
+
+
+

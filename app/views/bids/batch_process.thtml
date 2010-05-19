@@ -1,0 +1,42 @@
+<?php
+$html->addCrumb('admin','/pages/admin');
+$html->addCrumb('batch bid upload','/bids/batch/');
+
+
+/*
+    accepted_bids
+    rejected_bids
+    rejected_notfound
+*/
+//var_dump($dump);
+?>
+<h1>batch update - results</h1>
+
+<?php if ($accepted_bids) {echo "<h3>Titles with these control have now been bid upon:</h3>";} ?>
+    <ul>
+    <?php foreach ($accepted_bids as $accepted_bid): ?>
+    <li><?php echo $accepted_bid?></li>   
+    <?php endforeach; ?>
+    </ul>
+<?php if ($rejected_bids ) {echo "<h3>Titles with these control numbers have already been bid upon:</h3>";} ?>
+
+    <ul>
+    <?php foreach ($rejected_bids as $rejected_bid): ?>
+    <li><?php echo $rejected_bid?></li>   
+    <?php endforeach; ?>
+    </ul>
+
+<?php if ($rejected_notfound) {echo "<h3>Titles with these control numbers cannot be located in the catalogue:</h3>";} ?>
+
+    <ul>
+    <?php foreach ($rejected_notfound as $rejected_notfound_bid): ?>
+    <li><?php echo $rejected_notfound_bid?></li>   
+    <?php endforeach; ?>
+    </ul>
+   
+   <hr/>
+   <p>
+   <i><?php echo $count ?> bid(s) added: </i>
+  <?php echo $html->link('Submit another batch bid','/bids/batch') . " or " . $html->link('Return to administration','/pages/admin') ?>
+   </p>
+    

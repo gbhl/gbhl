@@ -1,0 +1,80 @@
+<h1>View existing bids</h1>
+<form method="post" action="<?php echo $html->url('/bids')?>">
+    <p>
+         <!--  Title:
+        <?php echo $html->input('Bib/title', array('size' => '40'))?>
+        <?php echo $html->tagErrorMsg('Bib/title', 'Search term required') ?>
+    </p>
+
+    <p>
+      <?php echo $html->submit('Search') ?>    -->
+<?php
+   $html->addCrumb('view bids','/bids');
+   $pagination->setPaging($paging);
+   echo ($filter->setFiltering($filters));
+?>
+
+<table>
+<tr>
+    <th><?php echo '#'; ?></th>
+    <th><?php echo 'Title #'; ?></th>
+    <th><?php echo $pagination->sortLink('norm_title', 'Title'); ?></th>
+    <th><?php echo $pagination->sortLink('user_id', 'User'); ?></th>
+    <th><?php echo $pagination->sortLink('partial', 'Bid type'); ?></th>
+    <th><?php echo $pagination->sortLink('startdate', 'Start date'); ?></th>
+    <th><?php echo $pagination->sortLink('enddate', 'End date'); ?></th>
+    <th><?php echo $pagination->sortLink('status_id', 'Status'); ?></th>
+    <th>Flag</th>
+    <th><?php echo $pagination->sortLink('notes', 'Notes'); ?></th>
+    <th>Actions</th>
+
+</tr>
+<?php foreach ($Bids as $row):
+
+//var_dump($row['Bib']);
+
+?>
+<tr>
+     <td><?php echo $row['Bid']['id'] ?></td>
+     <td><?php echo $html->link('view', '/Bibs/view/' . $row['Bib']['id'], array('target' => '_blank') ); ?></td>
+     <td><?php echo $row['Bib']['title'] ?></td>
+     <td><?php echo $row['User']['username'] ?></td>
+      <td><?php if ($row['Bid']['partial']) {echo 'Partial bid'; } else {echo 'Complete bid'; }  ?></td>
+     <td><?php if (!$row['Bid']['startdate']) echo '&nbsp;';  else echo $row['Bid']['startdate']; ?></td>
+     <td><?php if (!$row['Bid']['enddate']) echo '&nbsp;';  else echo $row['Bid']['enddate']; ?></td>
+     <td><?php echo $row['Status']['status'] ?></td>
+     <td><?php if (!$row['Bid']['scansflag']) echo '&nbsp;';  else echo $row['Bid']['scansflag']; ?></td>
+     <td><?php if (!$row['Bid']['notes']) echo '&nbsp;';  else echo $row['Bid']['notes']; ?></td>
+
+	   <td>
+          <?php
+	    // Logic to determine if logged in users can see buttons for editing their records...
+	    // For NHM institution only, everyone can edit any other NHM bid.
+	  
+	  if (($othAuth and $row['User']['id']== $othAuth->user('id')) || ($othAuth->user('institution') == 'NHM' &&  substr($row['User']['username'],0,3)  == "nhm" ) )
+	  
+          {
+            // BS 14 Feb 2008 switched this off so edit button appears for full and partial bids to allow status update to "complete"
+            // if($row['Bid']['partial'] ==1)
+            //{
+            echo $html->link('Edit bid','/bids/editfrombidlist/'. $row['Bid']['id']) . "<br/>";
+            // }       
+          echo $html->link('Delete bid','/bids/deletefrombidslist/'. $row['Bid']['id']);
+          }
+          else
+          {
+          echo "You are not authorised to delete or edit this bid, please contact the bid owner";
+          }
+          ?>
+      </td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<br />
+<br />
+ <p>Select a page:</p>
+<?php echo $pagination->pageNumbers(NULL, NULL, ' '); ?>
+
+
+</table>

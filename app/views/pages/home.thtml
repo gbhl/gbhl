@@ -1,0 +1,46 @@
+<?php // $html->addCrumb('Welcome','/matches/');
+if ($othAuth->sessionValid())
+{$fullname   = $othAuth->user('name');}
+else
+{
+$fullname ='';    
+}    
+?>
+
+<h1>Welcome <?php echo $fullname ?></h1>
+
+<p>
+<small class='standoutcontent'>
+Notice: The System was moved from NHM London to NHM Vienna. If there are any problems, please contact the <a href="mailto:wolfgang.koller@nhm-wien.ac.at">Technical Support</a>.
+</small>
+</p>
+
+<p>
+<!--
+Welcome the the Biodiversity Heritage Library Union Catalogue.
+This catalogue allows users to browse and search titles held by BHL member institutions using advanced filtering.
+-->
+Welcome to the prototype of the Biodiversity Heritage Library for Europe Scan List. This catalogue allows users to browse and search titles held by
+BHL-Europe and BHL member institutions using advanced filtering. It will be further
+developed and extended towards the Global References Index to Biodiversity (GRIB).
+It will then be a tool to manage the taxonomic literature that is (a) already
+available in digital form, (b) in the process of being digitised, and (c) for which
+plans have been created for digitisation.
+
+</p>
+
+<span><?php echo $html->link('Browse and search records','/bibs/')?> -  Available to all users</span>
+<br/>
+
+<?php
+
+if (!$othAuth->sessionValid()) {
+	echo "<span>" . $html->link('Login','/users/login') . " - Registered users can login to add and amend records</span>";
+}
+
+?>
+<br/>
+
+<!--
+<p>Registration is only available to current members of the Biodiversity Heritage Library and other associated parties. For more information on the consortium and its aims, please visit the <a href="http://www.biodiversitylibrary.org/About.aspx">Biodiversity Heritage Library website</a>.</p>
+-->

@@ -1,0 +1,50 @@
+<?php
+$id = $mypublisher['Publisher']['id'];
+$html->addCrumb('view records','/publishers/index');
+$html->addCrumb('view record',"/publishers/view/$id"); 
+
+
+$mypublishers = $mypublisher['Publisher'];
+?>
+
+<h1><?php echo $mypublisher['Publisher']['name']?></h1>
+
+
+<p><small>Name: <?php if(!$mypublisher['Publisher']['name']) echo '&nbsp;'; else echo str_replace('@@@a','',$mypublisher['Publisher']['name']); ?></p>
+
+
+<p><small>Former name: <?php echo $mypublisher['Publisher']['former_name']?></small></p>
+
+<p><small>Current owner: <?php echo $mypublisher['Publisher']['current_owner']?></small></p>
+
+<p><small>Contact name: <?php echo $mypublisher['Publisher']['contact_name']?></small></p>
+
+<p><small>Contact email: <?php echo $mypublisher['Publisher']['email_contact']?></small></p>
+
+<p><small>Country Based: <?php echo $mypublisher['Publisher']['country_based']?></small></p>
+
+<p><small>Url: <?php echo $mypublisher['Publisher']['url']?></small></p>
+
+<p><small>Websocs record: <?php echo $mypublisher['Publisher']['websocs']?></small></p>
+
+<p><small>Publisher Status: <?php echo $Publisherstatuses[$mypublisher['Publisher']['publisher_status']]?></small></p>
+
+<p><small>Agreement status: <?php echo $Agreementstatuses[$mypublisher['Publisher']['agreement_status']]?></small></p>
+
+<p><small>We can scan from (start date): <?php echo $mypublisher['Publisher']['agreement_start_year']?></small></p>
+
+<p><small>We can scan from (end date): <?php echo $mypublisher['Publisher']['agreement_end_year']?></small></p>
+
+<p><small>Agreement Exclusions: <?php echo $mypublisher['Publisher']['agreement_exclusions']?></small></p>
+
+
+<p><small>Watchfile check Status: <?php echo $Watchfilestatuses[$mypublisher['Publisher']['watchfile_check_status']]?></small></p>
+
+<p><small>Watchfile Result (for monographs): <?php echo $mypublisher['Publisher']['watchfile_result']?></small></p>
+
+
+
+
+
+
+

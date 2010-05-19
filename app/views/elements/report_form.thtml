@@ -1,0 +1,105 @@
+
+
+<div id="report_form" class="report_form">
+
+<table>
+<tr>
+    <td valign="top">
+    
+    <form action="../<?php echo $cur_controller; ?>/createReport/" method="post">
+
+    <fieldset>
+    <legend style=""><b>Saved Reports</b></legend>
+    <table class="report_small">
+    <tr>
+        <td><?php echo $html->selectTag('Misc/saved_reports', $existing_reports);  ?></td>
+        <td><input type="submit" name="existing" value="Pull" style="font: normal normal bold 8pt arial"></td>
+        <td><input type="submit" name="existing" value="Delete" style="font: normal normal bold 8pt arial" onclick="return confirm('Are you sure you want to delete this report?')"></td>
+    </tr>
+    </table>
+    </fieldset>
+
+    </form>
+
+    </td>
+    <td width="20"></td>
+    <td valign="top">
+    
+    <form action="../<?php echo $cur_controller; ?>/createReport/" method="post">
+
+    <fieldset>
+    <legend style=""><b>New Report</b></legend>
+    <table class="report_small">
+    <tr>
+        <td>Report Name</td>
+        <td><input type="text" name="report_name" style="width: 180px;"></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>* Field required if saving report</td>
+    </tr>
+    </table>
+    </fieldset>
+
+    </td>
+</tr>
+</table>
+
+
+<?php foreach ($report_form as $key => $value): ?>
+<?php if($key!='associated_table') { ?>
+
+    <div style="height: 15px;"><!-- Spacer --></div>
+
+    <fieldset>
+    <legend><b><?php echo $key; ?> Table</b></legend>
+    
+    <table class="report">
+    <tr class="header">
+        <td>Field</td>
+        <td>Display Name</td>
+        <td style="text-align: center;">Priority</td>
+        <td style="text-align: center;">Sort By Primary</td>
+        <td style="text-align: center;">Sort By Secondary</td>
+        <td style="text-align: center;">Include</td>
+    </tr>
+        
+    <?php for ($i=0; $i<count($value); $i++) { ?>
+
+    <tr class="body" onClick="if($('<?php echo $key; ?><?php echo $i; ?>').checked == true){ this.className='body_selected'; } else { this.className='body'; }">
+        <td>
+        
+        <?php echo $value[$i]; ?><input type="hidden" name="data[<?php echo $key; ?>][<?php echo $value[$i] ;?>][field_name]" value="<?php echo $value[$i]; ?>"><input type="hidden" name="data[<?php echo $key; ?>][<?php echo $value[$i] ;?>][model]" value="<?php echo $key; ?>"><input type="hidden" name="data[<?php echo $key; ?>][<?php echo $value[$i] ;?>][associated_table]" value="<?php if(!empty($table_data['associated_table'][$key])) { echo $table_data['associated_table'][$key]; } ?>">
+        
+        </td>
+        <td>
+        
+        <input type="text" name="data[<?php echo $key; ?>][<?php echo $value[$i] ;?>][display_name]" onFocus="if($('<?php echo $key; ?><?php echo $i; ?>').checked == false){ this.className='body_selected'; $('<?php echo $key; ?><?php echo $i; ?>').checked = true; }"></td>
+        <td style="text-align: center;"><input type="text" name="data[<?php echo $key; ?>][<?php echo $value[$i] ;?>][priority]" style="width: 50px;" onFocus="if($('<?php echo $key; ?><?php echo $i; ?>').checked == false){ this.className='body_selected'; $('<?php echo $key; ?><?php echo $i; ?>').checked = true; }">
+        
+        </td>
+        <td style="text-align: center;"><input type="radio" name="order_by_primary" value="<?php echo $key; ?>.<?php echo $value[$i]; ?>"></td>
+        <td style="text-align: center;"><input type="radio" name="order_by_secondary" value="<?php echo $key; ?>.<?php echo $value[$i]; ?>"></td>
+        <td style="text-align: center;"><input type="checkbox" id="<?php echo $key; ?><?php echo $i; ?>" name="data[<?php echo $key; ?>][<?php echo $value[$i] ;?>][include]"></td>
+    </tr>
+
+    <?php } ?>
+    
+    </table>
+    </fieldset>
+    
+<?php } ?>
+<?php endforeach; ?>
+
+<div style="height: 15px;"><!-- Spacer --></div>
+
+<table cellspacing="0" cellpadding="0">
+<tr>
+    <td><input type="submit" name="submit" value="Create Report"></td>
+    <td width="10"></td>
+    <td><input type="submit" name="submit" value="Create And Save Report"></td>
+</tr>
+</table>
+
+</form> 
+</div>

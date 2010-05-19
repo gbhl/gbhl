@@ -1,0 +1,95 @@
+<h1>View problem list</h1>
+<form method="post" action="<?php echo $html->url('/problemlists')?>">
+    <p>
+         <!--  Title:
+        <?php echo $html->input('Bib/title', array('size' => '40'))?>
+        <?php echo $html->tagErrorMsg('Bib/title', 'Search term required') ?>
+    </p>
+
+    <p>
+      <?php echo $html->submit('Search') ?>    -->
+      
+<table>
+<tr>
+<td>
+<?php
+   $html->addCrumb('view records','/problemlists/index');
+   $pagination->setPaging($paging);
+   echo $html->link('tips','/pages/help#h11', array('target'=>'_blank'));
+   echo ($filter->setFiltering($filters));
+   ?>
+   <!-- BS later -->
+    <?php 
+    
+    if ($othAuth->sessionValid() && $othAuth->group('level') <= 200) 
+    {
+    
+                            echo $html->formTag('/problemlists/add/' . $html->tagValue('Problemlist/id'));
+    			    echo "<input type=\"hidden\" name=\"data[Problemlist][create_date]\"   id=\"data[Problemlist][create_date]\" value=\"";
+    			    echo date("Ymd") . "\" />";
+    			    echo "<input type=\"hidden\" name=\"data[Problemlist][library]\"   id=\"data[Problemlist][library]\" value=\"";
+    			    echo $othAuth->user('library') . "\" />";    			     			   
+                            echo $html->submit('[A]dd', array('accesskey' => 'a')) . "</form>" ;
+                            
+    }
+    
+    ?>
+</td>
+</tr>
+</table>
+
+
+
+
+<?php echo $pagination->prevPage('<<'); echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $pagination->nextPage('>>');?>
+
+<?php echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'; echo "Records found: " .  $pagination->_pageDetails['recordCount']; ?>
+
+<?php echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'; echo "Current page: " .  $pagination->_pageDetails['page']; ?>
+
+<table id="results">
+<tr>
+    <th><?php echo $pagination->sortLink('id', '#', 1); ?></th>
+    <th><?php echo $pagination->sortLink('create_date', 'Date Created'); ?></th>
+    <th><?php echo $pagination->sortLink('problem_list_status', 'Status'); ?></th>
+    <th>Actions</th>
+    <th>Any lines?</th>
+
+</tr>
+
+<!--?php var_dump($Problemlists);?-->
+
+<?php foreach ($Problemlists as $row): ?>
+
+<tr>
+    <td><a id="row<?php echo $row['Problemlist']['id'] ?>"></a><?php echo $row['Problemlist']['id'] ?></td>
+    <td><?php if(!$row['Problemlist']['create_date']) echo '&nbsp;'; else echo $row['Problemlist']['create_date']; ?></td>
+    
+    
+    <td><?php if(!$Problemliststatuses[$row['Problemlist']['problem_list_status']]) echo '&nbsp;'; else echo $Problemliststatuses[$row['Problemlist']['problem_list_status']]; ?></td>
+
+
+      
+
+
+    <td>
+        <?php echo $html->link('view','/Problemlists/view/' . $row['Problemlist']['id']); ?>
+        <?php echo $html->link('edit','/Problemlists/edit/' . $row['Problemlist']['id']); ?><br />
+        <?php echo $html->link('delete','/Problemlists/delete/' . $row['Problemlist']['id']); ?>
+     </td>
+     
+    <td>
+        <?php if(!$row['Problemlistline']) echo 'NO'; else echo 'YES'; ?>
+    </td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<br />
+<br />
+ <p>Select a page:</p>
+<?php echo $pagination->pageNumbers(NULL, NULL, ' '); ?>
+
+
+</table>
+

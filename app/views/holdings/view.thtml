@@ -1,0 +1,44 @@
+<?php
+$id = $myholding['Holding']['id'];
+$html->addCrumb('view records','/holdings/index');
+$html->addCrumb('view record',"/holdings/view/$id"); 
+
+
+$myholdings = $myholding['Holding'];
+?>
+
+<h1><?php echo $myholding['Bib']['title']?></h1>
+
+
+<p><small>Title: <?php if(!$myholding['Bib']['title']) echo '&nbsp;'; else echo $myholding['Bib']['title']; ?></p>
+
+<p><small>Publisher: <?php if(!$myholding['Bib']['pub']) echo '&nbsp;'; else echo $myholding['Bib']['pub']; ?></p>
+
+<p><small>Id: <?php echo $myholding['Holding']['id']?></small></p>
+
+<p><small>Control: <?php echo $matchlinker->generate_control($myholding['Holding']['place'], $myholding['Holding']['035'])?></small></p>
+
+<p><small>Place: <?php echo $myholding['Holding']['place']?></small></p>
+
+<p><small>Holdings 1: <?php echo $myholding['Holding']['hol_1']?></small></p>
+
+<p><small>Holdings 2: <?php echo $myholding['Holding']['hol_2']?></small></p>
+
+<p><small>Holdings 3: <?php echo $myholding['Holding']['hol_3']?></small></p>
+
+<p><small>Holdings 4: <?php echo $myholding['Holding']['hol_4']?></small></p>
+
+<p><small>Subject keywords: <?php echo $myholding['Holding']['subject']?></small></p>
+
+<p><small>856: <?php echo $myholding['Holding']['e_856']?></small></p>
+
+<p><small>OCLC: <?php echo $myholding['Holding']['oclc']?></small></p>
+
+<p><small>Basis of match (if any): <?php echo $myholding['Holding']['match_basis']?></small></p>
+
+
+
+
+
+
+

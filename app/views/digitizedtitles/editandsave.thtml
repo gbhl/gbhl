@@ -1,0 +1,70 @@
+<?php
+$id = $digitizedtitle['Digitizedtitle']['id'];
+$html->addCrumb('view digitizedtitles','/titles/index');
+$html->addCrumb('edit digitizedtitle','/digitizedtitles/edit/' . $id);
+
+     //print_r($digitizedtitle_so_far['title_id']);
+     $match_title = $this->data['Title']['title'];
+
+//var_dump($this->data['Title']['title']);
+?>
+
+<h1>Edit electronic status details for <?php echo $match_title ?></h1>
+<form method="post" action="<?php echo $html->url('/digitizedtitles/editandsave/' . $id)?>">
+ <?php echo $html->hidden('Digitizedtitle/id'); ?>
+    <?php echo $html->hidden('Digitizedtitle/digitizedtitle_id'); ?>
+    <?php echo $html->hidden('Digitizedtitle/user_id', array('value' => $othAuth->user('id'))); ?>
+    
+
+
+
+    <p><b>Is full text of this title to be found on Google? </b>
+	 <?php 	
+	          if (!$this->params['form']['data']['Digitizedtitle']['on_google_status'])
+	              $ongooglestatusselect = 1;
+	          echo  $html->selectTag('Digitizedtitle/on_google_status', $on_google_status, $ongooglestatusselect) . '&nbsp;';                                 	         
+	          echo  $html->link('Try Google', 'http://www.google.com/search?hl=en&q=' . $match_title . '&meta=', array('target' => '_blank') );
+         ?>
+    </p>
+    
+
+    <p><b>Is full text of this title to be found on Google Scholar? </b>
+	 <?php 	
+	          if (!$this->params['form']['data']['Digitizedtitle']['on_google_scholar_status'])
+	              $ongooglescholarstatusselect = 1;
+	          echo  $html->selectTag('Digitizedtitle/on_google_scholar_status', $on_google_scholar_status, $ongooglescholarstatusselect) . '&nbsp;';                                 	         
+	          echo  $html->link('Try Google Scholar', 'http://scholar.google.com/scholar?q=' . $match_title . '&hl=en&lr=', array('target' => '_blank') );
+         ?>
+    </p>
+    
+    <p><b>Is the full-text of this title to be found on the publisher's website? </b>
+	 <?php 	
+	          if (!$this->params['form']['data']['Digitizedtitle']['on_pub_website_status'])
+	              $onpubwebsitestatusselect = 1;
+	          echo  $html->selectTag('Digitizedtitle/on_pub_website_status', $on_pub_website_status, $onpubwebsitestatusselect) . '&nbsp;';                                 	         	          
+         ?>
+    </p>
+    
+     <p>
+    <b>Identifying notes: </b>
+     <?php echo $html->textarea('Digitizedtitle/notes', array('rows' => '5', 'cols' => '40')) ?>
+    </p>
+       
+
+    <p><b>Has this title already been scanned by someone else? </b>
+	 <?php 	
+	          echo  $html->selectTag('Digitizedtitle/digitized_title_status', $digitized_title_status_options, $digitizedtitle['Digitizedtitle']['digitized_title_status']) . '&nbsp;';                                 	         	          
+         ?>
+    </p>
+    
+    <p><b>If scanned, what type of organisation scanned it? </b>
+	 <?php 	
+	          echo  $html->selectTag('Digitizedtitle/scanned_by', $scanned_by_options, $digitizedtitle['Digitizedtitle']['scanned_by']) . '&nbsp;';                                 	         	          
+         ?>
+    </p>
+    
+    
+
+    <?php echo $html->submit('Update electronic status') ?>
+    
+</form>

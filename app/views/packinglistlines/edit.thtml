@@ -1,0 +1,74 @@
+<?php
+$id = $mypackinglistline['Packinglistline']['id'];
+$pkid = $mypackinglistline['Packinglistline']['packinglist_id'];
+
+$html->addCrumb('view lists','/packinglists/index');
+$html->addCrumb('edit Packing list',"/packinglists/edit/$pkid"); 
+//var_dump($mypackinglistlinelines);
+
+?>
+
+<h1>Edit Packing list line <?php echo $mypackinglistline['Packinglistline']['id'] ?></h1>
+<form method="post" action="<?php echo $html->url('/packinglistlines/edit')?>">
+ <?php echo $html->hidden('Packinglistline/id'); ?>
+    <?php echo $html->hidden('Packinglistline/user_id'); ?>
+    <?php echo $html->hidden('Packinglistline/packinglist_id'); ?>
+
+    <p>
+    <b>Packing list: <?php echo $mypackinglistline['Packinglistline']['id'] ?></b> 
+    
+     - Line <?php echo $mypackinglistline['Packinglistline']['linenumber'] ?>
+<!-- BS 20090317- added temp line to fix line numbers where deletions have taken place and screwed up the next highest number query. -->     
+  <?php echo $html->input('Packinglistline/linenumber', array('size' => '10'))?>
+ 
+
+    </p>
+    
+    <p>Title: <?php echo $mypackinglistline['Title']['title'] ?>
+    </p>
+
+    <p>
+    <b>Chronology start: </b>
+    <?php echo $html->input('Packinglistline/chronology_start', array('size' => '40'))?>
+    </p>
+
+    <p>
+    <b>Chronology end: </b>
+    <?php echo $html->input('Packinglistline/chronology_end', array('size' => '40'))?>
+    </p>
+
+    <p>
+    <b>Enumeration start: </b>
+    <?php echo $html->input('Packinglistline/enum_start', array('size' => '40'))?>
+    </p>
+
+    <p>
+    <b>Enumeration end: </b>
+    <?php echo $html->input('Packinglistline/enum_end', array('size' => '40'))?>
+    </p>
+
+    <p>
+    <b>Series: </b>
+    <?php echo $html->input('Packinglistline/series', array('size' => '40'))?>
+    </p>
+
+    <p>
+    <b>Line status: </b>
+    <?php  echo  $html->selectTag('Packinglistline/line_status', $Packinglistlinestatuses, NULL ,array(),NULL,0);?>                        
+    </p>
+
+    <p>
+    <b>Internet Archive reject reason: </b>
+    <?php  echo  $html->selectTag('Packinglistline/ia_reject_reason', $Iarejectreasonstatuses, NULL ,array(),NULL,0);?>                        
+    </p>
+
+
+
+
+<p>
+    <?php echo $html->submit('[U]pdate line', array('accesskey' => 'u')) ?>
+</p>    
+</form>
+
+
+<hr />
