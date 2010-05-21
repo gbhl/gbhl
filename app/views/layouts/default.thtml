@@ -60,7 +60,8 @@
 			$groupname  = $othAuth->group('name');
 	
 			if ($othAuth->sessionValid()) {
-				echo "<span>". $html->link('View existing bids','/bids/')."</span><br/><br/>";
+				echo "<span>". $html->link('View existing bids','/bids/')."</span><br/>";
+				echo "<span>". $html->link('View my bids','/bids/index/mybids/')."</span><br/><br/>";
 
                                 echo "<span>". $html->link('Logout','/users/logout')."</span><br/><br/>";
 

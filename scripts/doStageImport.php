@@ -6,10 +6,7 @@
  * @author Wolfgang Koller <wolfgang.koller@nhm-wien.ac.at>
  */
 
-$DBINFO['HOST'] = 'localhost';
-$DBINFO['NAME'] = 'bhlscanlist';
-$DBINFO['USER'] = 'bhlscanlist';
-$DBINFO['PASS'] = 'bhlscanlist';
+require( "variables.php" );
 
 // Connect to database
 $link = mysql_connect( $DBINFO['HOST'], $DBINFO['USER'], $DBINFO['PASS'] );
@@ -25,7 +22,7 @@ while( $row = mysql_fetch_assoc( $result ) ) {
     // Find any matches
     if( !empty($oclc) ) {
         // Try to make an OCLC match
-        $match_result = mysql_query( 'SELECT `bib_id` FROM import_holdings WHERE `oclc` LIKE "%' . $oclc . '%" LIMIT 0,1', $link );
+        $match_result = mysql_query( "SELECT `bib_id` FROM import_holdings WHERE `oclc` LIKE '%" . $oclc . "%' AND `bib_id` != '$bib_id' LIMIT 0,1", $link );
         while( $match_row = mysql_fetch_assoc( $match_result ) ) {
             echo "Found Inner Match for '$bib_id' (OCLC: $oclc): " . $match_row['bib_id'] . "\n";
 
