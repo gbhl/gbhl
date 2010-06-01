@@ -13,7 +13,7 @@ $link = mysql_connect( $DBINFO['HOST'], $DBINFO['USER'], $DBINFO['PASS'] );
 mysql_select_db( $DBINFO['NAME'], $link );
 
 // In the first run, make an inner deduplication
-$result = mysql_query( "SELECT `id`, `bib_id`, `oclc` FROM import_holdings" );
+/*$result = mysql_query( "SELECT `id`, `bib_id`, `oclc` FROM import_holdings" );
 while( $row = mysql_fetch_assoc( $result ) ) {
     $holdings_id = $row['id'];
     $bib_id = $row['bib_id'];
@@ -29,31 +29,56 @@ while( $row = mysql_fetch_assoc( $result ) ) {
             updateMatch( $bib_id, $match_row['bib_id'] );
         }
     }
-}
+}*/
 
 // First of all, fetch all entries from the holdings table to find matches using the OCLC number
 //$result = mysql_query( 'SELECT `id`, `bib_id`, `oclc` FROM import_holdings WHERE `oclc` IS NOT NULL AND `oclc` != ""', $link );
-$result = mysql_query( 'SELECT t1.`id`, t1.`author`, t1.`title`, t1.`260` AS `publisher`, t2.`oclc` FROM import_bibs AS t1 LEFT JOIN import_holdings AS t2 ON t1.`id` = t2.`bib_id`', $link );
+//$result = mysql_query( 'SELECT t1.`id`, t1.`author`, t1.`title`, t1.`260` AS `publisher`, t2.`oclc` FROM import_bibs AS t1 LEFT JOIN import_holdings AS t2 ON t1.`id` = t2.`bib_id`', $link );
+$result = mysql_query( 'SELECT `bib_id`, `oclc` FROM `import_holdingsIndex`', $link );
 
 while( $row = mysql_fetch_assoc( $result ) ) {
-    $bFoundMatch = false;
-
-    $bib_id = $row['id'];
-    $author = $row['author'];
-    $title = $row['title'];
-    $publisher = $row['publisher'];
+    $bib_id = $row['bib_id'];
+    //$author = $row['author'];
+    //$title = $row['title'];
+    //$publisher = $row['publisher'];
     $oclc = trim($row['oclc']);
 
-    if( !empty($oclc) ) {
-        // Try to make an OCLC match
-        $match_result = mysql_query( 'SELECT `bib_id` FROM holdings WHERE `oclc` LIKE "%ocm' . $oclc . '%" OR `oclc` LIKE "%' . $oclc . '%" LIMIT 0,1', $link );
+     // Try to make an OCLC match
+    if( $oclc > 0 ) {
+        $match_result = mysql_query( "SELECT `bib_id` FROM `holdingsIndex` WHERE `oclc` = '$oclc' LIMIT 0,1", $link );
         while( $match_row = mysql_fetch_assoc( $match_result ) ) {
-            $bFoundMatch = true;
             echo "Found Match for '$bib_id' (OCLC: $oclc): " . $match_row['bib_id'] . "\n";
 
             moveMatch( $bib_id, $match_row['bib_id'] );
         }
     }
+}
+
+$result = mysql_query( 'SELECT `bib_id`, `title`, `author`, `publisher` FROM `import_bibsIndex`', $link );
+
+while( $row = mysql_fetch_assoc( $result ) ) {
+    $bib_id = $row['bib_id'];
+    $author = $row['author'];
+    $title = $row['title'];
+    $publisher = $row['publisher'];
+
+    $match_result = mysql_query( "SELECT `bib_id` FROM `bibsIndex` WHERE `title` LIKE '%$title%' AND `author` LIKE '%$author%' AND `publisher` LIKE '%$publisher%' LIMIT 0,1", $link );
+    while( $match_row = mysql_fetch_assoc( $match_result ) ) {
+        echo "Found Match for '$bib_id' (TAP): " . $match_row['bib_id'] . "\n";
+
+        moveMatch( $bib_id, $match_row['bib_id'] );
+    }
+
+    /*// Next try: title + author + publisher
+    if( !$bFoundMatch ) {
+        $match_result = mysql_query( "SELECT `bib_id` FROM `bibsIndex` WHERE `title` LIKE '%$title%' AND `author` LIKE '%$author%' AND `publisher` LIKE '%$publisher%' LIMIT 0,1", $link );
+        while( $match_row = mysql_fetch_assoc( $match_result ) ) {
+            $bFoundMatch = true;
+            echo "Found Match for '$bib_id' TAP match): " . $match_row['bib_id'] . "\n";
+
+            moveMatch( $bib_id, $match_row['bib_id'] );
+        }
+    }*/
 
     /*if( !$bFoundMatch && !empty($title) ) {
         // If not found, try to make an author / title / place match
@@ -67,7 +92,7 @@ while( $row = mysql_fetch_assoc( $result ) ) {
     }*/
 
     // If no match was found, add entry as new one
-    if( !$bFoundMatch ) moveEntry( $bib_id );
+    //if( !$bFoundMatch ) moveEntry( $bib_id );
 }
 
 mysql_close( $link );

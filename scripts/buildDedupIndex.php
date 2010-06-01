@@ -1,6 +1,6 @@
 <?php
 /*
- * Build the index for deduplication
+ * Build the bibs index used during import for deduplication
  */
 
 require( "variables.php" );
@@ -9,7 +9,7 @@ require( "variables.php" );
 $link = mysql_connect( $DBINFO['HOST'], $DBINFO['USER'], $DBINFO['PASS'] );
 mysql_select_db( $DBINFO['NAME'], $link );
 
-$result = mysql_query( "SELECT `id`, `author`, `title`, `260` as `publisher` FROM `import_bibs`" );
+$result = mysql_query( "SELECT `id`, `author`, `title`, `260` as `publisher` FROM `bibs`" );
 
 while( $row = mysql_fetch_assoc($result) ) {
     $bib_id = $row['id'];
@@ -21,10 +21,10 @@ while( $row = mysql_fetch_assoc($result) ) {
     $title = preg_replace( '/\W/i', "", $title );
     $publisher = preg_replace( '/\W/i', "", $publisher );
 
-    mysql_query( "INSERT INTO `import_bibsIndex` ( `bib_id`, `title`, `author`, `publisher` ) values ( '$bib_id', '$title', '$author', '$publisher' )" );
+    mysql_query( "INSERT INTO `bibsIndex` ( `bib_id`, `title`, `author`, `publisher` ) values ( '$bib_id', '$title', '$author', '$publisher' )" );
 }
 
-$result = mysql_query( "SELECT `bib_id`, `oclc` FROM `import_holdings`" );
+$result = mysql_query( "SELECT `bib_id`, `oclc` FROM `holdings`" );
 
 while( $row = mysql_fetch_assoc($result) ) {
     $bib_id = $row['bib_id'];
@@ -32,5 +32,5 @@ while( $row = mysql_fetch_assoc($result) ) {
 
     $oclc = preg_replace( '/\D/i', "", $oclc );
 
-    mysql_query( "INSERT INTO `import_holdingsIndex` ( `bib_id`, `oclc` ) values ( '$bib_id', '$oclc' )" );
+    mysql_query( "INSERT INTO `holdingsIndex` ( `bib_id`, `oclc` ) values ( '$bib_id', '$oclc' )" );
 }
