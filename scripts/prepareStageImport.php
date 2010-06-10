@@ -9,6 +9,10 @@ require( "variables.php" );
 $link = mysql_connect( $DBINFO['HOST'], $DBINFO['USER'], $DBINFO['PASS'] );
 mysql_select_db( $DBINFO['NAME'], $link );
 
+// Clear old indexes
+mysql_query( "DELETE FROM `import_bibsIndex`" );
+mysql_query( "DELETE FROM `import_holdingsIndex`" );
+
 $result = mysql_query( "SELECT `id`, `author`, `title`, `260` as `publisher` FROM `import_bibs`" );
 
 while( $row = mysql_fetch_assoc($result) ) {

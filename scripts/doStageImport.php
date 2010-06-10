@@ -31,79 +31,141 @@ while( $row = mysql_fetch_assoc( $result ) ) {
     }
 }*/
 
-// First of all, fetch all entries from the holdings table to find matches using the OCLC number
-//$result = mysql_query( 'SELECT `id`, `bib_id`, `oclc` FROM import_holdings WHERE `oclc` IS NOT NULL AND `oclc` != ""', $link );
-//$result = mysql_query( 'SELECT t1.`id`, t1.`author`, t1.`title`, t1.`260` AS `publisher`, t2.`oclc` FROM import_bibs AS t1 LEFT JOIN import_holdings AS t2 ON t1.`id` = t2.`bib_id`', $link );
-$result = mysql_query( 'SELECT `bib_id`, `oclc` FROM `import_holdingsIndex`', $link );
-
+// Before we start, remove any entries which have been previously inserted (using place and source_id)
+$result = mysql_query( 'SELECT `bib_id`, `sourceid`, `place` FROM `import_holdings`', $link );
 while( $row = mysql_fetch_assoc( $result ) ) {
     $bib_id = $row['bib_id'];
-    //$author = $row['author'];
-    //$title = $row['title'];
-    //$publisher = $row['publisher'];
-    $oclc = trim($row['oclc']);
+    $sourceid = $row['sourceid'];
+    $place = $row['place'];
 
-     // Try to make an OCLC match
-    if( $oclc > 0 ) {
-        $match_result = mysql_query( "SELECT `bib_id` FROM `holdingsIndex` WHERE `oclc` = '$oclc' LIMIT 0,1", $link );
-        while( $match_row = mysql_fetch_assoc( $match_result ) ) {
-            echo "Found Match for '$bib_id' (OCLC: $oclc): " . $match_row['bib_id'] . "\n";
+    // Now check if this entry is already in the database
+    $match_result = mysql_query( "SELECT `bib_id` FROM `holdings` WHERE `sourceid` = '$sourceid' AND `place` = '$place'", $link );
+    if( mysql_num_rows($match_result) > 0 ) {
+        echo "Removing previously imported entry: sourceid '$sourceid', place '$place'\n";
 
-            moveMatch( $bib_id, $match_row['bib_id'] );
-        }
+        // Remove entry from import tables
+        removeEntry( $bib_id );
     }
 }
 
-$result = mysql_query( 'SELECT `bib_id`, `title`, `author`, `publisher` FROM `import_bibsIndex`', $link );
+// Fetch all entries and dedup & insert them
+$main_result = mysql_query( 'SELECT `bib_id` FROM `import_bibsIndex`', $link );
+while( $main_row = mysql_fetch_assoc( $main_result ) ) {
+    $bib_id = $main_row['bib_id'];
 
-while( $row = mysql_fetch_assoc( $result ) ) {
-    $bib_id = $row['bib_id'];
-    $author = $row['author'];
-    $title = $row['title'];
-    $publisher = $row['publisher'];
+    // First of all, fetch all entries from the holdings table to find matches using the OCLC number
+    $result = mysql_query( "SELECT `oclc` FROM `import_holdingsIndex` WHERE `bib_id` = '$bib_id'", $link );
+    while( $row = mysql_fetch_assoc( $result ) ) {
+        $oclc = trim($row['oclc']);
 
-    $match_result = mysql_query( "SELECT `bib_id` FROM `bibsIndex` WHERE `title` LIKE '%$title%' AND `author` LIKE '%$author%' AND `publisher` LIKE '%$publisher%' LIMIT 0,1", $link );
-    while( $match_row = mysql_fetch_assoc( $match_result ) ) {
-        echo "Found Match for '$bib_id' (TAP): " . $match_row['bib_id'] . "\n";
+         // Try to make an OCLC match
+        if( $oclc > 0 ) {
+            $match_result = mysql_query( "SELECT `bib_id` FROM `holdingsIndex` WHERE `oclc` = '$oclc' LIMIT 0,1", $link );
+            while( $match_row = mysql_fetch_assoc( $match_result ) ) {
+                echo "Found Match for '$bib_id' (OCLC: $oclc): " . $match_row['bib_id'] . "\n";
 
-        moveMatch( $bib_id, $match_row['bib_id'] );
+                moveMatch( $bib_id, $match_row['bib_id'] );
+            }
+        }
     }
 
-    /*// Next try: title + author + publisher
-    if( !$bFoundMatch ) {
+    // Make an title author publisher match (we don't have to care about the OCLC match because the index will be updated when there is a match, thus the query would return zero records)
+    $result = mysql_query( "SELECT `title`, `author`, `publisher` FROM `import_bibsIndex` WHERE `bib_id` = '$bib_id'", $link );
+    while( $row = mysql_fetch_assoc( $result ) ) {
+        //$bib_id = $row['bib_id'];
+        $author = $row['author'];
+        $title = $row['title'];
+        $publisher = $row['publisher'];
+
         $match_result = mysql_query( "SELECT `bib_id` FROM `bibsIndex` WHERE `title` LIKE '%$title%' AND `author` LIKE '%$author%' AND `publisher` LIKE '%$publisher%' LIMIT 0,1", $link );
         while( $match_row = mysql_fetch_assoc( $match_result ) ) {
-            $bFoundMatch = true;
-            echo "Found Match for '$bib_id' TAP match): " . $match_row['bib_id'] . "\n";
+            echo "Found Match for '$bib_id' (TAP): " . $match_row['bib_id'] . "\n";
 
             moveMatch( $bib_id, $match_row['bib_id'] );
         }
-    }*/
+    }
 
-    /*if( !$bFoundMatch && !empty($title) ) {
-        // If not found, try to make an author / title / place match
-        //echo "SELECT `id` FROM bibs WHERE `author` LIKE '%" . mysql_escape_string($author) . "%' AND `title` LIKE '%" . mysql_escape_string($title) . "%' AND `260` LIKE '%" . mysql_escape_string($publisher) . "%'";
-        //$match_result = mysql_query( "SELECT `id` FROM bibs WHERE `author` SOUNDS LIKE '" . mysql_escape_string($author) . "' AND `title` SOUNDS LIKE '" . mysql_escape_string($title) . "' AND `260` SOUNDS LIKE '" . mysql_escape_string($publisher) . "'" );
-        $match_result = mysql_query( "SELECT `id`, `author`, `title`, `260` AS `publisher` FROM bibs WHERE ( `title` SOUNDS LIKE '" . mysql_escape_string($title) . "' AND `author` SOUNDS LIKE '" . mysql_escape_string($author) . "' ) OR ( `260` SOUNDS LIKE '" . mysql_escape_string($publisher) . "' AND `title` SOUNDS LIKE '" . mysql_escape_string($title) . "' )" );
-        while( $match_row = mysql_fetch_assoc( $match_result ) ) {
-            $bFoundMatch = true;
-            echo "Found Match for '$bib_id' (ATP): " . $match_row['id'] . ": '$title' / '$author' / '$publisher' MATCH '" . $match_row['title'] . "' / '" . $match_row['author'] . "' / '" . $match_row['publisher'] . "'\n";
-        }
-    }*/
+    // If no match was found, move the entry to the production table
+    $result = mysql_query( "SELECT `bib_id` FROM `import_bibsIndex` WHERE `bib_id` = '$bib_id'", $link );
+    while( $row = mysql_fetch_assoc( $result ) ) {
+        echo "Creating new entry for '" . $row['bib_id'] . "'\n";
 
-    // If no match was found, add entry as new one
-    //if( !$bFoundMatch ) moveEntry( $bib_id );
+        moveEntry( $row['bib_id'] );
+    }
 }
 
+// Last step: Clear the index
+clearImportIndex();
+
+// Close DB connection
 mysql_close( $link );
 
-function updateMatch( $old_bib_id, $new_bib_id ) {
+/*
+ *
+ * FUNCTIONS START
+ *
+ */
+
+
+/*function updateMatch( $old_bib_id, $new_bib_id ) {
     global $link;
 
     mysql_query( "UPDATE import_bibs SET `depreciated` = '1', `new_id` = '$new_bib_id' WHERE `id` = '$old_bib_id'", $link );
     mysql_query( 'UPDATE import_holdings SET `bib_id` = "' . $new_bib_id . '" WHERE `bib_id` = "' . $old_bib_id . '"', $link );
+}*/
+
+/**
+ * Updates the dedup-index for the given entry
+ *
+ * @global mysql-resource $link MySQL Link identifier
+ * @param int $bib_id ID of bib-entry to update the index for
+ * @param bool $bRemove Remove entry from index
+ */
+function updateIndex( $bib_id ) {
+    global $link;
+
+    $result = mysql_query( "SELECT `author`, `title`, `260` as `publisher` FROM `bibs` WHERE `id` = '$bib_id'", $link );
+    $row = mysql_fetch_assoc($result);
+
+    $author = $row['author'];
+    $title = $row['title'];
+    $publisher = $row['publisher'];
+
+    $author = preg_replace( '/\W/i', "", $author );
+    $title = preg_replace( '/\W/i', "", $title );
+    $publisher = preg_replace( '/\W/i', "", $publisher );
+
+    mysql_query( "INSERT INTO `bibsIndex` ( `bib_id`, `title`, `author`, `publisher` ) values ( '$bib_id', '$title', '$author', '$publisher' )" );
+
+    $result = mysql_query( "SELECT `oclc` FROM `holdings` WHERE `bib_id` = '$bib_id'" );
+    $row = mysql_fetch_assoc($result);
+
+    $oclc = $row['oclc'];
+
+    $oclc = preg_replace( '/\D/i', "", $oclc );
+
+    mysql_query( "INSERT INTO `holdingsIndex` ( `bib_id`, `oclc` ) values ( '$bib_id', '$oclc' )" );
 }
 
+/**
+ * Clear the import index
+ *
+ * @global mysql-resource $link MySQL Link identifier
+ */
+function clearImportIndex() {
+   global $link;
+
+   mysql_query( "DELETE FROM `import_bibsIndex`" );
+   mysql_query( "DELETE FROM `import_holdingsIndex`" );
+}
+
+/**
+ * Move a found duplicate to the productive table
+ *
+ * @global mysql-resource $link Mysql Link identifier
+ * @param int $old_bib_id Old bib_id (of duplicate)
+ * @param int $new_bib_id New bib_id (of master)
+ */
 function moveMatch( $old_bib_id, $new_bib_id ) {
     global $link;
     
@@ -188,8 +250,23 @@ function moveMatch( $old_bib_id, $new_bib_id ) {
     // Transfer entries into productive holdings table
     mysql_query( 'INSERT INTO holdings ( `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, `match_basis`, `oclc`, `user_id`, `orig_bib_id` ) ( SELECT `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, \'oclc\', `oclc`, `user_id`, `orig_bib_id` FROM import_holdings WHERE `bib_id` = "' . $new_bib_id . '" )', $link );
     mysql_query( 'DELETE FROM import_holdings WHERE `bib_id` = "' . $new_bib_id . '"', $link );
+
+    //updateIndex( $new_bib_id );
+    
+    // Update import index
+    //mysql_query( "DELETE FROM `import_bibsIndex` WHERE `bib_id` = '$old_bib_id'", $link );
+    //mysql_query( "DELETE FROM `import_holdingsIndex` WHERE `bib_id` = '$old_bib_id'", $link );
+
+    // Remove import entry
+    removeEntry( $old_bib_id );
 }
 
+/**
+ * Moves a given entry to the production table
+ *
+ * @global mysql-resource $link MySQL link identifier
+ * @param int $import_bib_id bib_id of entry to import
+ */
 function moveEntry( $import_bib_id ) {
     global $link;
 
@@ -271,9 +348,33 @@ function moveEntry( $import_bib_id ) {
     mysql_query( "DELETE FROM import_bibs WHERE `id` = '$import_bib_id' OR `new_id` = '$import_bib_id'", $link );
 
     // Update import holdings to refer to new bib entry
-    mysql_query( 'UPDATE import_holdings SET `bib_id` = "' . $new_bib_id . '" WHERE `bib_id` = "' . $import_bib_id . '"', $link );
+    mysql_query( "UPDATE import_holdings SET `bib_id` = ' . $new_bib_id . ' WHERE `bib_id` = ' . $import_bib_id . '", $link );
 
     // Transfer entries into productive holdings table
-    mysql_query( 'INSERT INTO holdings ( `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, `match_basis`, `oclc`, `user_id`, `orig_bib_id` ) ( SELECT `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, \'oclc\', `oclc`, `user_id`, `orig_bib_id` FROM import_holdings WHERE `bib_id` = "' . $new_bib_id . '" )', $link );
-    mysql_query( 'DELETE FROM import_holdings WHERE `bib_id` = "' . $new_bib_id . '"', $link );
+    mysql_query( "INSERT INTO holdings ( `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, `match_basis`, `oclc`, `user_id`, `orig_bib_id` ) ( SELECT `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, \'oclc\', `oclc`, `user_id`, `orig_bib_id` FROM import_holdings WHERE `bib_id` = ' . $new_bib_id . ' )", $link );
+    mysql_query( "DELETE FROM import_holdings WHERE `bib_id` = ' . $new_bib_id . '", $link );
+
+    // Update index
+    updateIndex( $new_bib_id );
+
+    // Remove import entry
+    removeEntry( $import_bib_id );
+}
+
+/**
+ * Remove an entry from the import table
+ *
+ * @global mysql-resource $link MySQL link identifier
+ * @param <type> $bib_id bib-id of entry to remove
+ */
+function removeEntry( $bib_id ) {
+    global $link;
+
+    // Delete entries
+    mysql_query( "DELETE FROM `import_bibs` WHERE `id` = '$bib_id'", $link );
+    mysql_query( "DELETE FROM `import_holdings` WHERE `bib_id` = '$bib_id'", $link );
+
+    // Update index
+    mysql_query( "DELETE FROM `import_bibsIndex` WHERE `bib_id` = '$bib_id'", $link );
+    mysql_query( "DELETE FROM `import_holdingsIndex` WHERE `bib_id` = '$bib_id'", $link );
 }

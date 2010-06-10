@@ -9,7 +9,11 @@ require( "variables.php" );
 $link = mysql_connect( $DBINFO['HOST'], $DBINFO['USER'], $DBINFO['PASS'] );
 mysql_select_db( $DBINFO['NAME'], $link );
 
-$result = mysql_query( "SELECT `id`, `author`, `title`, `260` as `publisher` FROM `bibs`" );
+// Clear old indexes
+mysql_query( "DELETE FROM `bibsIndex`" );
+mysql_query( "DELETE FROM `holdingsIndex`" );
+
+$result = mysql_query( "SELECT `id`, `author`, `title`, `260` as `publisher` FROM `bibs` WHERE `depreciated` IS NULL" );
 
 while( $row = mysql_fetch_assoc($result) ) {
     $bib_id = $row['id'];
@@ -24,7 +28,7 @@ while( $row = mysql_fetch_assoc($result) ) {
     mysql_query( "INSERT INTO `bibsIndex` ( `bib_id`, `title`, `author`, `publisher` ) values ( '$bib_id', '$title', '$author', '$publisher' )" );
 }
 
-$result = mysql_query( "SELECT `bib_id`, `oclc` FROM `holdings`" );
+$result = mysql_query( "SELECT t1.`bib_id`, t1.`oclc` FROM `holdings` AS t1 LEFT JOIN `bibs` AS t2 ON t1.`bib_id` = t2.`id` WHERE t2.`depreciated` IS NULL" );
 
 while( $row = mysql_fetch_assoc($result) ) {
     $bib_id = $row['bib_id'];
