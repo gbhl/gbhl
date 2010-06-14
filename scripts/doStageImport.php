@@ -64,7 +64,7 @@ while( $main_row = mysql_fetch_assoc( $main_result ) ) {
             while( $match_row = mysql_fetch_assoc( $match_result ) ) {
                 echo "Found Match for '$bib_id' (OCLC: $oclc): " . $match_row['bib_id'] . "\n";
 
-                moveMatch( $bib_id, $match_row['bib_id'] );
+                moveMatch( $bib_id, $match_row['bib_id'], 'OCLC' );
             }
         }
     }
@@ -81,7 +81,7 @@ while( $main_row = mysql_fetch_assoc( $main_result ) ) {
         while( $match_row = mysql_fetch_assoc( $match_result ) ) {
             echo "Found Match for '$bib_id' (TAP): " . $match_row['bib_id'] . "\n";
 
-            moveMatch( $bib_id, $match_row['bib_id'] );
+            moveMatch( $bib_id, $match_row['bib_id'], 'ATP' );
         }
     }
 
@@ -166,7 +166,7 @@ function clearImportIndex() {
  * @param int $old_bib_id Old bib_id (of duplicate)
  * @param int $new_bib_id New bib_id (of master)
  */
-function moveMatch( $old_bib_id, $new_bib_id ) {
+function moveMatch( $old_bib_id, $new_bib_id, $match_method = 'OCLC' ) {
     global $link;
     
     // Add original entry as deprecated one
@@ -248,7 +248,7 @@ function moveMatch( $old_bib_id, $new_bib_id ) {
     mysql_query( 'UPDATE import_holdings SET `bib_id` = "' . $new_bib_id . '" WHERE `bib_id` = "' . $old_bib_id . '"', $link );
 
     // Transfer entries into productive holdings table
-    mysql_query( 'INSERT INTO holdings ( `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, `match_basis`, `oclc`, `user_id`, `orig_bib_id` ) ( SELECT `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, \'oclc\', `oclc`, `user_id`, `orig_bib_id` FROM import_holdings WHERE `bib_id` = "' . $new_bib_id . '" )', $link );
+    mysql_query( 'INSERT INTO holdings ( `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, `match_basis`, `oclc`, `user_id`, `orig_bib_id` ) ( SELECT `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, \'' . $match_method . '\', `oclc`, `user_id`, `orig_bib_id` FROM import_holdings WHERE `bib_id` = "' . $new_bib_id . '" )', $link );
     mysql_query( 'DELETE FROM import_holdings WHERE `bib_id` = "' . $new_bib_id . '"', $link );
 
     //updateIndex( $new_bib_id );
@@ -351,7 +351,7 @@ function moveEntry( $import_bib_id ) {
     mysql_query( "UPDATE import_holdings SET `bib_id` = ' . $new_bib_id . ' WHERE `bib_id` = ' . $import_bib_id . '", $link );
 
     // Transfer entries into productive holdings table
-    mysql_query( "INSERT INTO holdings ( `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, `match_basis`, `oclc`, `user_id`, `orig_bib_id` ) ( SELECT `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, \'oclc\', `oclc`, `user_id`, `orig_bib_id` FROM import_holdings WHERE `bib_id` = ' . $new_bib_id . ' )", $link );
+    mysql_query( "INSERT INTO holdings ( `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, `match_basis`, `oclc`, `user_id`, `orig_bib_id` ) ( SELECT `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, \'\', `oclc`, `user_id`, `orig_bib_id` FROM import_holdings WHERE `bib_id` = ' . $new_bib_id . ' )", $link );
     mysql_query( "DELETE FROM import_holdings WHERE `bib_id` = ' . $new_bib_id . '", $link );
 
     // Update index
