@@ -64,11 +64,19 @@
    
          <?php          
 		 $holdings = $row['Holding'];
-		 foreach ($holdings as $holding)
+                 
+                 $display_holdings = array();
+
+                 // Merge holdings information
+                 foreach( $holdings as $holding ) {
+                     $display_holdings[$holding['place']] = $holding;
+                 }
+
+		 foreach ($display_holdings as $holding)
 		 {
 		    //echo $holding['place'];
 		    echo $matchlinker->generate_opac_links($holding['place'], $holding['035'], $holding['oclc'], $row['Bib']['001']);
-		    echo "<br>";
+		    //echo "<br>";
 		 }                  
          ?>
         
