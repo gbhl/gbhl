@@ -345,6 +345,10 @@ class BibsController extends AppController {
             'Duplicate'), NULL, a('='));
 
 
+        // Filter for field 035, which includes the BHL-Title ID
+        //$this->Filter->setFilter(aa('t245stripped', 'Title'), NULL, a(
+        //    '~','^','!~', '='));
+
         $this->Filter->filter($f, $cond); $this->set('filters', $f);
 
 

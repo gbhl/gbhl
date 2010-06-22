@@ -51,123 +51,60 @@ class matchlinkerhelper extends Helper {
 
                 switch ($bhlplace) {
 
-                    case "SIL":
-
                     // Check to see if it belongs to the Smithsonian...
-
+                    case "SIL":
                         $html .= "<a class='actionbut' target='_blank' href=' ";
-
                         $html .= "http://siris-libraries.si.edu/ipac20/ipac.jsp?&menu=search&aspect=power&npp=20&ipp=20&profile=dial&ri=&oper=and&aspect=power&index=BIB&term=" . rtrim($controlnumber);
                         $html .=  "'>";
                         $html .=  "$bhlplace";
                         $html .=  "</a>";
-
-                        $html .=  "<BR/>";
                         break;
 
-                    case "NHM":
-
                     // Check to see if it belongs to the NHM...
-
-                    // only generate an url if Sirsi is not in $controlnumber
-
+                    case "NHM":
+                        // only generate an url if Sirsi is not in $controlnumber
                         if (preg_match ("/\(Sirsi\)/", $controlnumber) == 0) {
-
                             $html .= "<a class='actionbut' target='_blank' href=' ";
-
                             $html .=  "http://unicorn.nhm.ac.uk/uhtbin/cgisirsi/x/0/0/5?searchdata1=" . rtrim($controlnumber)  . "&srchfield1=CKEY";
                             $html .=  "'>";
                             $html .=  "$bhlplace";
                             $html .=  "</a>";
-
-                            $html .=  "<BR>";
                         }
                         break;
 
-
-                    case "FIELD":
-
-                    // Check to see if it belongs to the Field museum...
-
-                        $html .=  "$bhlplace";
-                        $html .=  "<BR/>";
-                        break;
-
-                    case "MOBOT":
-
-                    // Check to see if it belongs to the MOBOT  museum...
-
-                        $html .=  "$bhlplace";
-                        $html .=  "<BR/>";
-
-                        break;
-
-                    case "AMNH":
-
-                    // Check to see if it belongs to the AMNH  museum...
-
-                        $html .=  "$bhlplace";
-                        $html .=  "<BR/>";
-
-                        break;
-
-                    case "HAR":
-
-                    // Check to see if it belongs to the HARVARD  lib...
-                        $html .=  "$bhlplace";
-                        $html .=  "<BR/>";
-                        break;
-
-                    case "KEW":
-
-                    // Check to see if it belongs to the KEW  museum...
-
-                        $html .=  "$bhlplace";
-                        $html .=  "<BR/>";
-
-                        break;
-
-                    case "NYBG":
-
-                    // Check to see if it belongs to the NYBG museum...
-
-                        $html .=  "$bhlplace";
-                        $html .=  "<BR/>";
-                        break;
-
-                    case "MBL":
-
                     // Check to see if it belongs to the MBL  lib...
-
+                    case "MBL":
                         $html .= "<a class='actionbut' target='_blank' href=' ";
-
                         $html .=  "http://cornelia.whoi.edu/cgi-bin/Pwebrecon.cgi?DB=local&SAB1=" . rtrim($controlnumber)  . "&BOOL1=as+a+phrase&FLD1=Keywords+anywhere+%28GKEY%29&CNT=10&HIST=1";
                         $html .=  "'>";
                         $html .=  "$bhlplace";
                         $html .=  "</a>";
-
-                        $html .=  "<BR>";
-
                         break;
 
+                    // Entry coming from Internet Archive
+                    case "IA":
+                        $matches = array();
+
+                        if( preg_match( "/(BHLTID)(\d+)/", $controlnumber, $matches ) ) {
+                            $html .= "<a class='actionbut' target='_blank' href=' ";
+                            $html .=  "http://www.biodiversitylibrary.org/bibliography/" . intval($matches[2]);
+                            $html .=  "'>";
+                            $html .=  "BHL (" . intval($matches[2]) . ")";
+                            $html .=  "</a>";
+                        }
+                        break;
 
                     // Add additional clauses for additional institutions here
-
                     default:
-
                         $html .=  "$bhlplace";
-                        $html .=  "<BR/>";
-
+                        break;
 
                 } // end switch
 
+                $html .=  "<BR/>";
                 break;
-
-
             } // End foreach loop
-
         }
-
         return $html;
     } // End function / method
 

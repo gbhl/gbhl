@@ -39,7 +39,7 @@ while( $row = mysql_fetch_assoc( $result ) ) {
     $place = $row['place'];
 
     // Now check if this entry is already in the database
-    $match_result = mysql_query( "SELECT `bib_id` FROM `holdings` WHERE `sourceid` = '$sourceid' AND `place` = '$place'", $link );
+    $match_result = mysql_query( "SELECT `bib_id` FROM `holdings` WHERE ( `sourceid` = '$sourceid' AND `place` = '$place' )", $link );
     if( mysql_num_rows($match_result) > 0 ) {
         echo "Removing previously imported entry: sourceid '$sourceid', place '$place'\n";
 
@@ -365,7 +365,7 @@ function moveEntry( $import_bib_id ) {
  * Remove an entry from the import table
  *
  * @global mysql-resource $link MySQL link identifier
- * @param <type> $bib_id bib-id of entry to remove
+ * @param int $bib_id bib-id of entry to remove
  */
 function removeEntry( $bib_id ) {
     global $link;
@@ -377,4 +377,31 @@ function removeEntry( $bib_id ) {
     // Update index
     mysql_query( "DELETE FROM `import_bibsIndex` WHERE `bib_id` = '$bib_id'", $link );
     mysql_query( "DELETE FROM `import_holdingsIndex` WHERE `bib_id` = '$bib_id'", $link );
+}
+
+function mergeHoldings( $master_hol_id, $slave_hol_id ) {
+    global $link;
+
+    // Get holding information from secondary holdings entry
+    $result = mysql_query( "SELECT `hol_1`, `hol_2`, `hol_3`, `hol_4` FROM `import_holdings` WHERE `id` = '$slave_hol_id'" );
+
+    // Concatenate secondary holdings information
+    $slave_holdings = array();
+    $slave_holdingString = "";
+    if( ($row = mysql_fetch_assoc($result)) ) {
+        for( $i = 1; $i <= 4; $i++ ) {
+            if( !empty($row['hol_' . $i]) ) {
+                $slave_holdings[] = $row['hol_' . $i];
+            }
+        }
+        $slave_holdingString = join( ';', $slave_holdings );
+    }
+    
+    $slave_holdingString = mysql_escape_string($slave_holdingString);
+
+    // Update primary holdings information
+    mysql_query( "UPDATE `import_holdings` SET `hol_4` = CONCAT( `hol_4`, '; ', '$slave_holdingString' ) WHERE `id` = '$master_hol_id'" );
+
+    // Remove slave holding information
+    mysql_query( "DELETE FROM `import_holdings` WHERE `id` = '$slave_hol_id'" );
 }
