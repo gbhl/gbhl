@@ -39,12 +39,13 @@ while( $row = mysql_fetch_assoc( $result ) ) {
     $place = $row['place'];
 
     // Now check if this entry is already in the database
-    $match_result = mysql_query( "SELECT `bib_id` FROM `holdings` WHERE ( `sourceid` = '$sourceid' AND `place` = '$place' )", $link );
+    //$match_result = mysql_query( "SELECT `bib_id` FROM `holdings` WHERE ( `sourceid` = '$sourceid' AND `place` = '$place' )", $link );
+    $match_result = mysql_query( "SELECT `source_id` FROM `import_seenIDs` WHERE `source` = '$place' AND `source_id` = '$sourceid'", $link );
     if( mysql_num_rows($match_result) > 0 ) {
         echo "Removing previously imported entry: sourceid '$sourceid', place '$place'\n";
 
         // Remove entry from import tables
-        removeEntry( $bib_id );
+        removeImportEntry( $bib_id );
     }
 }
 
@@ -52,6 +53,9 @@ while( $row = mysql_fetch_assoc( $result ) ) {
 $main_result = mysql_query( 'SELECT `bib_id` FROM `import_bibsIndex`', $link );
 while( $main_row = mysql_fetch_assoc( $main_result ) ) {
     $bib_id = $main_row['bib_id'];
+
+    // Insert place & source into seen table
+    mysql_query( "INSERT INTO `import_seenIDs` ( `source`, `sourceid` ) ( SELECT `sourceid`, `place` FROM `import_holdings` WHERE `bib_id` = '$bib_id' )" );
 
     // First of all, fetch all entries from the holdings table to find matches using the OCLC number
     $result = mysql_query( "SELECT `oclc` FROM `import_holdingsIndex` WHERE `bib_id` = '$bib_id'", $link );
@@ -93,6 +97,26 @@ while( $main_row = mysql_fetch_assoc( $main_result ) ) {
         moveEntry( $row['bib_id'] );
     }
 }
+
+// Collapse the holdings information (only for internet archive)
+$merge_result = mysql_query( "SELECT `id`, `bib_id`, `035`, count(*) AS `count` FROM `holdings` WHERE `place` = 'IA' GROUP BY `bib_id`, `035` HAVING `count` > 1", $link );
+while( $row = mysql_fetch_assoc($merge_result) ) {
+    $holding_id = $row['id'];
+    $bib_id = $row['bib_id'];
+    $local_ctrl = $row['035'];
+    $count = $row['count'];
+
+    echo "Merging holdings for '$bib_id' ( '$count' records )\n";
+
+    // Now fetch all other holdings and merge them
+    $result = mysql_query( "SELECT `id` FROM `holdings` WHERE `035` = '$local_ctrl' AND `bib_id` = '$bib_id' AND `id` != '$holding_id'", $link );
+    while( $sub_row = mysql_fetch_assoc( $result ) ) {
+        $sub_holding_id = $sub_row['id'];
+
+        mergeHoldings( $holding_id, $sub_holding_id );
+    }
+}
+
 
 // Last step: Clear the index
 clearImportIndex();
@@ -236,20 +260,20 @@ function moveMatch( $old_bib_id, $new_bib_id, $match_method = 'OCLC' ) {
         `t245stripped`
         FROM import_bibs
         WHERE `id` = '$old_bib_id'
-        OR `new_id` = '$old_bib_id'
         )
         "
     , $link );
+    //    OR `new_id` = '$old_bib_id'
 
     // Delete bib entry from import table
-    mysql_query( "DELETE FROM import_bibs WHERE `id` = '$old_bib_id' OR `new_id` = '$old_bib_id'", $link );
+    //mysql_query( "DELETE FROM import_bibs WHERE `id` = '$old_bib_id' OR `new_id` = '$old_bib_id'", $link );
 
     // Update import holdings to refer to new bib entry
-    mysql_query( 'UPDATE import_holdings SET `bib_id` = "' . $new_bib_id . '" WHERE `bib_id` = "' . $old_bib_id . '"', $link );
+    //mysql_query( 'UPDATE import_holdings SET `bib_id` = "' . $new_bib_id . '" WHERE `bib_id` = "' . $old_bib_id . '"', $link );
 
     // Transfer entries into productive holdings table
-    mysql_query( 'INSERT INTO holdings ( `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, `match_basis`, `oclc`, `user_id`, `orig_bib_id` ) ( SELECT `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, \'' . $match_method . '\', `oclc`, `user_id`, `orig_bib_id` FROM import_holdings WHERE `bib_id` = "' . $new_bib_id . '" )', $link );
-    mysql_query( 'DELETE FROM import_holdings WHERE `bib_id` = "' . $new_bib_id . '"', $link );
+    mysql_query( "INSERT INTO holdings ( `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, `match_basis`, `oclc`, `user_id`, `orig_bib_id` ) ( SELECT '$new_bib_id', `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, '$match_method', `oclc`, `user_id`, `orig_bib_id` FROM `import_holdings` WHERE `bib_id` = '$old_bib_id' )", $link );
+    //mysql_query( 'DELETE FROM import_holdings WHERE `bib_id` = "' . $new_bib_id . '"', $link );
 
     //updateIndex( $new_bib_id );
     
@@ -258,7 +282,7 @@ function moveMatch( $old_bib_id, $new_bib_id, $match_method = 'OCLC' ) {
     //mysql_query( "DELETE FROM `import_holdingsIndex` WHERE `bib_id` = '$old_bib_id'", $link );
 
     // Remove import entry
-    removeEntry( $old_bib_id );
+    removeImportEntry( $old_bib_id );
 }
 
 /**
@@ -337,28 +361,28 @@ function moveEntry( $import_bib_id ) {
         `t245stripped`
         FROM import_bibs
         WHERE `id` = '$import_bib_id'
-        OR `new_id` = '$import_bib_id'
         )
         "
     , $link );
+    //    OR `new_id` = '$import_bib_id'
 
     $new_bib_id = mysql_insert_id( $link );
 
     // Delete bib entry from import table
-    mysql_query( "DELETE FROM import_bibs WHERE `id` = '$import_bib_id' OR `new_id` = '$import_bib_id'", $link );
+    //mysql_query( "DELETE FROM import_bibs WHERE `id` = '$import_bib_id' OR `new_id` = '$import_bib_id'", $link );
 
     // Update import holdings to refer to new bib entry
-    mysql_query( "UPDATE import_holdings SET `bib_id` = ' . $new_bib_id . ' WHERE `bib_id` = ' . $import_bib_id . '", $link );
-
+    //mysql_query( "UPDATE import_holdings SET `bib_id` = ' . $new_bib_id . ' WHERE `bib_id` = ' . $import_bib_id . '", $link );
     // Transfer entries into productive holdings table
-    mysql_query( "INSERT INTO holdings ( `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, `match_basis`, `oclc`, `user_id`, `orig_bib_id` ) ( SELECT `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, \'\', `oclc`, `user_id`, `orig_bib_id` FROM import_holdings WHERE `bib_id` = ' . $new_bib_id . ' )", $link );
-    mysql_query( "DELETE FROM import_holdings WHERE `bib_id` = ' . $new_bib_id . '", $link );
+    mysql_query( "INSERT INTO holdings ( `bib_id`, `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, `match_basis`, `oclc`, `user_id`, `orig_bib_id` ) ( SELECT '$new_bib_id', `sourceid`, `035`, `hol_1`, `hol_2`, `hol_3`, `hol_4`, `subject`, `e_856`, `place`, 'NO MATCH', `oclc`, `user_id`, `orig_bib_id` FROM import_holdings WHERE `bib_id` = '$import_bib_id' )", $link );
 
-    // Update index
+    //mysql_query( "DELETE FROM import_holdings WHERE `bib_id` = ' . $new_bib_id . '", $link );
+
+    // Update index (because we might need this entry as a later master)
     updateIndex( $new_bib_id );
 
     // Remove import entry
-    removeEntry( $import_bib_id );
+    removeImportEntry( $import_bib_id );
 }
 
 /**
@@ -367,7 +391,7 @@ function moveEntry( $import_bib_id ) {
  * @global mysql-resource $link MySQL link identifier
  * @param int $bib_id bib-id of entry to remove
  */
-function removeEntry( $bib_id ) {
+function removeImportEntry( $bib_id ) {
     global $link;
 
     // Delete entries
@@ -379,29 +403,30 @@ function removeEntry( $bib_id ) {
     mysql_query( "DELETE FROM `import_holdingsIndex` WHERE `bib_id` = '$bib_id'", $link );
 }
 
-function mergeHoldings( $master_hol_id, $slave_hol_id ) {
+
+// TODO: Finish merging function
+function mergeHoldings( $primary_hol_id, $secondary_hol_id ) {
     global $link;
 
     // Get holding information from secondary holdings entry
-    $result = mysql_query( "SELECT `hol_1`, `hol_2`, `hol_3`, `hol_4` FROM `import_holdings` WHERE `id` = '$slave_hol_id'" );
+    $result = mysql_query( "SELECT `hol_1`, `hol_2`, `hol_3`, `hol_4` FROM `holdings` WHERE `id` = '$secondary_hol_id' OR `id` = '$primary_hol_id'" );
 
-    // Concatenate secondary holdings information
-    $slave_holdings = array();
-    $slave_holdingString = "";
-    if( ($row = mysql_fetch_assoc($result)) ) {
+    // Concatenate holdings information
+    $holdings = array();
+    $holdingsString = "";
+    while( ($row = mysql_fetch_assoc($result)) ) {
         for( $i = 1; $i <= 4; $i++ ) {
             if( !empty($row['hol_' . $i]) ) {
-                $slave_holdings[] = $row['hol_' . $i];
+                $holdings[] = $row['hol_' . $i];
             }
         }
-        $slave_holdingString = join( ';', $slave_holdings );
     }
-    
-    $slave_holdingString = mysql_escape_string($slave_holdingString);
+    $holdingsString = join( '; ', $holdings );
+    $holdingsString = mysql_escape_string($holdingsString);
 
     // Update primary holdings information
-    mysql_query( "UPDATE `import_holdings` SET `hol_4` = CONCAT( `hol_4`, '; ', '$slave_holdingString' ) WHERE `id` = '$master_hol_id'" );
+    mysql_query( "UPDATE `holdings` SET `hol_1` = '$holdingsString', `hol_2` = '', `hol_3` = '', `hol_4` = '' WHERE `id` = '$primary_hol_id'" );
 
-    // Remove slave holding information
-    mysql_query( "DELETE FROM `import_holdings` WHERE `id` = '$slave_hol_id'" );
+    // Remove secondary holding information
+    mysql_query( "DELETE FROM `holdings` WHERE `id` = '$secondary_hol_id'" );
 }

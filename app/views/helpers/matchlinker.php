@@ -85,11 +85,11 @@ class matchlinkerhelper extends Helper {
                     case "IA":
                         $matches = array();
 
-                        if( preg_match( "/(BHLTID)(\d+)/", $controlnumber, $matches ) ) {
+                        if( preg_match( "/\(BHLTID\)(\d+)/", $controlnumber, $matches ) ) {
                             $html .= "<a class='actionbut' target='_blank' href=' ";
-                            $html .=  "http://www.biodiversitylibrary.org/bibliography/" . intval($matches[2]);
+                            $html .=  "http://www.biodiversitylibrary.org/bibliography/" . intval($matches[1]);
                             $html .=  "'>";
-                            $html .=  "BHL (" . intval($matches[2]) . ")";
+                            $html .=  "BHL (" . intval($matches[1]) . ")";
                             $html .=  "</a>";
                         }
                         break;
