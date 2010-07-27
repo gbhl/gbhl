@@ -64,6 +64,7 @@ class FilterComponent extends Object {
         'timestamp' => array('=' => 1, '!=' => 1, '<' => 1, '>' => 1, '<=' => 1, '>=' => 1, ),
         'date' => array('=' => 1, '!=' => 1, '<' => 1, '>' => 1, '<=' => 1, '>=' => 1, ),
         'time' => array('=' => 1, '!=' => 1, '<' => 1, '>' => 1, '<=' => 1, '>=' => 1, ),
+        'text' => array('^' => 1, '~' => 1, '!~' => 1, '=' => 1, '!=' => 1, ),
     );
 
     /**
@@ -113,6 +114,15 @@ class FilterComponent extends Object {
         foreach ($this->controller->{$this->model}->_tableInfo->value as $k => $v) {
             $this->modelFields[strtolower($v['name'])] = strtolower($v['type']);
         }
+        // Load fields from tables with associations
+        foreach( $this->controller->{$this->model}->hasMany as $subModel => $properties ) {
+            foreach( $this->controller->{$this->model}->{$subModel}->_tableInfo->value as $k => $v ) {
+                $this->modelFields[strtolower($subModel . "." . $v['name'])] = strtolower($v['type']);
+            }
+        }
+
+        //die( var_export( $this->modelFields, true ) );
+
         $this->_restoreState();
 //      $this->currentFilters = array();
 
@@ -385,6 +395,9 @@ class FilterComponent extends Object {
         if ($this->modelFields[$field] == 'string' && $this->forceIcase && $this->dbDriver != 'postgres') {
             return 'UPPER(' . $this->controller->{$this->model}->escapeField($field) . ')';
         }
+        else if( strpos( $field, '.' ) > 0 ) {
+            return ucfirst( $field );
+        }
         return $this->controller->{$this->model}->escapeField($field);
     }
 
@@ -395,6 +408,7 @@ class FilterComponent extends Object {
     {
         switch ($this->modelFields[$field]) {
             case 'string':
+            case 'text':
                 if (in_array($type, array('^', '~', '='))) {
                     if ($this->dbDriver == 'postgres') {
                         return 'ILIKE';
@@ -444,6 +458,7 @@ class FilterComponent extends Object {
     {
         switch ($this->modelFields[$field]) {
             case 'string':
+            case 'text':
                 $value = str_replace('_', '\\_', $value);
                 $value = str_replace('%', '\\%', $value);
 

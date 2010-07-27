@@ -70,6 +70,9 @@ class matchlinkerhelper extends Helper {
                             $html .=  "$bhlplace";
                             $html .=  "</a>";
                         }
+                        else {
+                            $html .=  "$bhlplace";
+                        }
                         break;
 
                     // Check to see if it belongs to the MBL  lib...
@@ -86,11 +89,14 @@ class matchlinkerhelper extends Helper {
                         $matches = array();
 
                         if( preg_match( "/\(BHLTID\)(\d+)/", $controlnumber, $matches ) ) {
-                            $html .= "<a class='actionbut' target='_blank' href=' ";
+                            $html .= "<a class='actionbut' target='_blank' href='";
                             $html .=  "http://www.biodiversitylibrary.org/bibliography/" . intval($matches[1]);
                             $html .=  "'>";
-                            $html .=  "BHL (" . intval($matches[1]) . ")";
+                            $html .=  "BHL";
                             $html .=  "</a>";
+                        }
+                        else {
+                            $html .=  "$bhlplace";
                         }
                         break;
 
@@ -101,7 +107,7 @@ class matchlinkerhelper extends Helper {
 
                 } // end switch
 
-                $html .=  "<BR/>";
+                if( !empty($html) ) $html .=  "<BR/>";
                 break;
             } // End foreach loop
         }

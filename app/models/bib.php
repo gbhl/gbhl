@@ -1,26 +1,25 @@
 <?php
 
-class Bib extends AppModel
-{
-   var  $name = 'Bib';
-   var  $recursive = 2;
+class Bib extends AppModel {
+    var  $name = 'Bib';
+    var  $recursive = 2;
 
-   var $hasMany = array(
-				            'Bid' =>array('className'  => 'Bid',
-                                 'conditions' => '',
-                                 'order'      => '',
-                                 'foreignKey' => 'bib_id'
-                           ),
-                            'Holding' =>array('className'  => 'Holding',
-                                 'conditions' => '',
-                                 'order'      => '',
-                                 'foreignKey' => 'bib_id'
-                           )
+    var $hasMany = array(
+            'Bid' => array( 'className'  => 'Bid',
+                            'conditions' => '',
+                            'order'      => '',
+                            'foreignKey' => 'bib_id'
+            ),
+            'Holding' =>array('className'  => 'Holding',
+                            'conditions' => '',
+                            'order'      => '',
+                            'foreignKey' => 'bib_id'
+            )
 
-                                );
+    );
 
 
-				/*      var $validate = array(
+    /*      var $validate = array(
 
 				        'title'  => VALID_NOT_EMPTY,
 				        '001'   => VALID_NOT_EMPTY,
@@ -29,9 +28,8 @@ class Bib extends AppModel
 				        '022'   => VALID_NOT_EMPTY,
 				        'pub'   => VALID_NOT_EMPTY,
 				    );
-				*/
+    */
 
 
 }
 
-?>

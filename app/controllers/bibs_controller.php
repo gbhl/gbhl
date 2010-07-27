@@ -1,7 +1,8 @@
 <?php
 
 class BibsController extends AppController {
-    var $name = 'Bibs'; var $components = array ('Pagination', 'Filter','Report');
+    var $name = 'Bibs';
+    var $components = array ('Pagination', 'Filter','Report');
     var $helpers = array('Html','Pagination','Filter','Matchlinker','Bidbutton' ); // Added 'SerialsMatchLinker'
     var $uses = array('Bib','Bid','Status','User','Holding');
 
@@ -344,29 +345,63 @@ class BibsController extends AppController {
         $this->Filter->setFilter(aa('found_match',
             'Duplicate'), NULL, a('='));
 
-
         // Filter for field 035, which includes the BHL-Title ID
-        //$this->Filter->setFilter(aa('t245stripped', 'Title'), NULL, a(
-        //    '~','^','!~', '='));
+        var_export( $this->Filter->setFilter(aa('Holding.035', 'BHL TitleID'), NULL, a('=')), true );
 
-        $this->Filter->filter($f, $cond); $this->set('filters', $f);
+        $this->Filter->filter($f, $cond);
+        $this->set('filters', $f);
+
+        //die( var_export( $cond, true ) );
+
+        //$this->Bib->hasMany['Holding']['conditions'] = " `035` LIKE '(BHLTID)%4231%' ";
+        /*$this->Bib->bindModel(array(
+                'hasOne' => array(
+                        'CheckHolding' => array(
+                                'className' => 'Holding',
+                                'fields' => 'CheckHolding.035 AS hold_035',
+                                'type' => 'inner'
+                        )
+                )
+                ), false);
+        /*$data = $this->User->find('all', array(
+                'group' => 'User.id',
+                'recursive' => 0, // At least 0 for joins to work
+                'conditions' => array(
+                        'num_documents >=' => 3
+                ),
+                'order' => 'num_documents DESC'
+        ));*/
+
+        //$cond = "hold_035 LIKE '(BHLTID)%4231%'";
+
+        $cond = array( "Holding.035" => "LIKE '(BHLTID)%4231%'" );
+
+        $ids_result = $this->Bib->Holding->findAll( $cond, array('Holding.bib_id'), null, null, 1, -1 );
+
+        $ids = array();
+        foreach( $ids_result as $row ) {
+            $ids[] = $row['bib_id'];
+        }
+
+        $this->set( 'Bibs', $this->Bib->findAll( array('Bib.id' => $ids ) ) );
 
 
+        //$cond = "";
 
+        /* Setup pagination */
+        //$this->Pagination->controller = &$this;
+        //$this->Pagination->show = 30;
 
-
-            /* Setup pagination */
-        $this->Pagination->controller = &$this;
-        $this->Pagination->show = 30;
-
-        $this->Pagination->init(
+        /*$this->Pagination->init(
             $cond, 'Bib', NULL, array('bibs.id', 'newtitle_b', '260', '210', 'match_basis', 'places', 'subjects', 'found_match'), 0
-        );
+        );*/
         //'depreciated is NULL'
-        $this->set('Bibs', $this->Bib->findAll(
+        /*$this->set('Bibs', $this->Bib->findAll(
             $cond,'',$this->Pagination->order, $this->Pagination->show,
-            $this->Pagination->page
-        ));
+            $this->Pagination->page, 1
+        ));*/
+
+        //$this->set( 'Bibs', $this->Bib->findAll($cond, null, null, null, 1, 2 ) );
 
     //var_dump($this->Bib->holdings);
     }

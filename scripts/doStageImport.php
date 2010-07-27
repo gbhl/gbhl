@@ -117,6 +117,30 @@ while( $row = mysql_fetch_assoc($merge_result) ) {
     }
 }
 
+// Finally, add a bid for each new holding
+$bid_result = mysql_query( "SELECT `bib_id`, `hol_1` FROM `holdings` WHERE `place` = 'IA'", $link );
+while( $row = mysql_fetch_assoc( $bid_result ) ) {
+    $bib_id = $row['bib_id'];
+    $hol_1 = mysql_escape_string( $row['hol_1'] );
+
+    // Check if an old bid exists
+    $existing_result = mysql_query( "SELECT `id` FROM `bids` WHERE `bib_id` = '$bib_id' AND `user_id` = '999' AND '$hol_1' LIKE CONCAT( `notes`, '%' )" );
+    if( mysql_num_rows($existing_result) > 0 ) {
+        // Update existing bid
+        $bid_row = mysql_fetch_assoc($existing_result);
+        $bid_id = $bid_row['id'];
+
+        echo "Updating bid for '$bib_id' ($bid_id)\n";
+
+        mysql_query( "UPDATE `bids` SET `notes` = '$hol_1' WHERE `id` = '$bid_id'" );
+    }
+    else {
+        echo "Creating bid for '$bib_id'\n";
+
+        mysql_query( "INSERT into `bids` ( `notes`, `partial`, `bib_id`, `user_id`, `status_id` ) values ( '$hol_1', '1', '$bib_id', '999', '2' )" );
+    }
+}
+
 
 // Last step: Clear the index
 clearImportIndex();
@@ -409,17 +433,21 @@ function mergeHoldings( $primary_hol_id, $secondary_hol_id ) {
     global $link;
 
     // Get holding information from secondary holdings entry
-    $result = mysql_query( "SELECT `hol_1`, `hol_2`, `hol_3`, `hol_4` FROM `holdings` WHERE `id` = '$secondary_hol_id' OR `id` = '$primary_hol_id'" );
+    $result = mysql_query( "SELECT `bib_id`, `hol_1`, `hol_2`, `hol_3`, `hol_4` FROM `holdings` WHERE `id` = '$secondary_hol_id' OR `id` = '$primary_hol_id'" );
 
     // Concatenate holdings information
     $holdings = array();
     $holdingsString = "";
+    $bib_id = 0;
     while( ($row = mysql_fetch_assoc($result)) ) {
         for( $i = 1; $i <= 4; $i++ ) {
             if( !empty($row['hol_' . $i]) ) {
                 $holdings[] = $row['hol_' . $i];
             }
         }
+
+        // This works because we assume that we only merge hodlings from the same bib-entry
+        $bib_id = $row['bib_id'];
     }
     $holdingsString = join( '; ', $holdings );
     $holdingsString = mysql_escape_string($holdingsString);
