@@ -40,7 +40,7 @@ while( $row = mysql_fetch_assoc( $result ) ) {
 
     // Now check if this entry is already in the database
     //$match_result = mysql_query( "SELECT `bib_id` FROM `holdings` WHERE ( `sourceid` = '$sourceid' AND `place` = '$place' )", $link );
-    $match_result = mysql_query( "SELECT `source_id` FROM `import_seenIDs` WHERE `source` = '$place' AND `source_id` = '$sourceid'", $link );
+    $match_result = mysql_query( "SELECT `sourceid` FROM `import_seenIDs` WHERE `source` = '$place' AND `sourceid` = '$sourceid'", $link );
     if( mysql_num_rows($match_result) > 0 ) {
         echo "Removing previously imported entry: sourceid '$sourceid', place '$place'\n";
 
@@ -55,7 +55,7 @@ while( $main_row = mysql_fetch_assoc( $main_result ) ) {
     $bib_id = $main_row['bib_id'];
 
     // Insert place & source into seen table
-    mysql_query( "INSERT INTO `import_seenIDs` ( `source`, `sourceid` ) ( SELECT `sourceid`, `place` FROM `import_holdings` WHERE `bib_id` = '$bib_id' )" );
+    mysql_query( "INSERT INTO `import_seenIDs` ( `source`, `sourceid` ) ( SELECT `place`, `sourceid` FROM `import_holdings` WHERE `bib_id` = '$bib_id' )" );
 
     // First of all, fetch all entries from the holdings table to find matches using the OCLC number
     $result = mysql_query( "SELECT `oclc` FROM `import_holdingsIndex` WHERE `bib_id` = '$bib_id'", $link );

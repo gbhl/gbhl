@@ -346,7 +346,7 @@ class BibsController extends AppController {
             'Duplicate'), NULL, a('='));
 
         // Filter for field 035, which includes the BHL-Title ID
-        var_export( $this->Filter->setFilter(aa('Holding.035', 'BHL TitleID'), NULL, a('=')), true );
+        //var_export( $this->Filter->setFilter(aa('Holding.035', 'BHL TitleID'), NULL, a('=')), true );
 
         $this->Filter->filter($f, $cond);
         $this->set('filters', $f);
@@ -374,32 +374,32 @@ class BibsController extends AppController {
 
         //$cond = "hold_035 LIKE '(BHLTID)%4231%'";
 
-        $cond = array( "Holding.035" => "LIKE '(BHLTID)%4231%'" );
+        //$cond = array( "Holding.035" => "LIKE '(BHLTID)%4231%'" );
 
-        $ids_result = $this->Bib->Holding->findAll( $cond, array('Holding.bib_id'), null, null, 1, -1 );
+        /*$ids_result = $this->Bib->Holding->findAll( $cond, array('Holding.bib_id'), null, null, 1, -1 );
 
         $ids = array();
         foreach( $ids_result as $row ) {
             $ids[] = $row['bib_id'];
         }
 
-        $this->set( 'Bibs', $this->Bib->findAll( array('Bib.id' => $ids ) ) );
+        $this->set( 'Bibs', $this->Bib->findAll( array('Bib.id' => $ids ) ) );*/
 
 
         //$cond = "";
 
         /* Setup pagination */
-        //$this->Pagination->controller = &$this;
-        //$this->Pagination->show = 30;
+        $this->Pagination->controller = &$this;
+        $this->Pagination->show = 30;
 
-        /*$this->Pagination->init(
+       $this->Pagination->init(
             $cond, 'Bib', NULL, array('bibs.id', 'newtitle_b', '260', '210', 'match_basis', 'places', 'subjects', 'found_match'), 0
-        );*/
+        );
         //'depreciated is NULL'
-        /*$this->set('Bibs', $this->Bib->findAll(
+        $this->set('Bibs', $this->Bib->findAll(
             $cond,'',$this->Pagination->order, $this->Pagination->show,
             $this->Pagination->page, 1
-        ));*/
+        ));
 
         //$this->set( 'Bibs', $this->Bib->findAll($cond, null, null, null, 1, 2 ) );
 
