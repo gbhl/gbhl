@@ -1,14 +1,14 @@
 <?php
-$html->addCrumb('view bids','/bids')
+$html->addCrumb('view bids','/bids');
 $html->addCrumb('view record','/bids/view');
 
-    $bids = $bib['Bid'];
+$bids = $bib['Bid'];
 
  	//print_r($bids);
    // echo '<b>Id:</b> ' . $bib['Bib']['id'];
 ?>
 
-<h1><?php echod $bib['Bib']['title']?></h1>
+<h1><?php echo $bib['Bib']['title']?></h1>
 
 <p><small>Title: <?php echo $bib['Bib']['title']?></small></p>
 
