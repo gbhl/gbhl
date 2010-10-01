@@ -14,6 +14,10 @@
    echo ($filter->setFiltering($filters));
 ?>
 
+    <div align="right" style="padding: 5px;">
+    <?php echo $html->link( $html->image('page_white_excel.png', array("alt"=>"Export List as CSV", "width"=>"16px", "height"=>"16px", "border" => "0" )), '/bids/csv/', array( "title" => "Export List as CSV" ), false, false ); ?>
+    <?php echo $html->link( $html->image('page_excel.png', array("alt"=>"Export FULL List as CSV", "width"=>"16px", "height"=>"16px", "border" => "0" )), '/bids/csv/fulllist/', array( "title" => "Export FULL List as CSV" ), false, false ); ?>
+    </div>
 <table>
 <tr>
     <th><?php echo '#'; ?></th>

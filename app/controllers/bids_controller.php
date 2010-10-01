@@ -2,10 +2,12 @@
 class BidsController extends AppController {
     var $name = 'Bids';
     var $components = array ('Pagination', 'Filter', 'othAuth','Report'); // Added
-    var $helpers = array('Html','Pagination', 'Filter'); // Added
+    var $helpers = array('Html','Pagination', 'Filter', 'Csv'); // Added
     //var $scaffold;
     var $uses = array('Bid','Bib','Status','User');
     var $bids_exist;
+
+    var $cond;
 
     function createReport() {
         if (!empty($this->data)) {
@@ -146,8 +148,11 @@ class BidsController extends AppController {
 
         //error_log( var_export( $this->params['pass'], true ) );
 
+        //print_r( $this );
+        //exit( 0 );
+
         // Apply filter for user id if this is a "mybids" requests
-        if( isset($this->params['pass']) && $this->params['pass'][0] == 'mybids' ) {
+        if( isset($this->params['pass']) && array_search( 'mybids', $this->params['pass'] ) !== false ) {
             //error_log( "Yes!" );
 
             $this->Filter->currentFilters = array(
@@ -164,7 +169,7 @@ class BidsController extends AppController {
         }
 
         // finally go for it
-        $this->Filter->filter($f, $cond);
+        $this->Filter->filter($f, $this->cond);
         $this->set('filters', $f);
 
         /* Setup pagination */
@@ -172,7 +177,7 @@ class BidsController extends AppController {
         $this->Pagination->show = 30;
 
         $this->Pagination->init(
-                $cond,
+                $this->cond,
                 'Bid',
                 NULL,
                 array('id', 'title_id', 'title', 'norm_title', 'user_id', 'partial','startdate', 'enddate', 'status_id','notes','excepts'),
@@ -180,15 +185,31 @@ class BidsController extends AppController {
         );
 
 
-        // Add condititon - depreciated = FALSE
-        $this->set('Bids', $this->Bid->findAll(
-                $cond,
-                NULL,
-                $this->Pagination->order,
-                $this->Pagination->show,
-                $this->Pagination->page
-        ));
-    }
+        if( isset($this->params['pass']) && array_search( 'fulllist', $this->params['pass'] ) !== false ) {
+            // Add condititon - depreciated = FALSE
+            $this->set('Bids', $this->Bid->findAll(
+                    $this->cond,
+                    NULL,
+                    $this->Pagination->order,
+                    NULL,
+                    1
+            ));
+        }
+        else {
+            // Add condititon - depreciated = FALSE
+            $this->set('Bids', $this->Bid->findAll(
+                    $this->cond,
+                    NULL,
+                    $this->Pagination->order,
+                    $this->Pagination->show,
+                    $this->Pagination->page
+            ));
+        }
+
+        /*if( isset($this->params['pass']) && array_search( 'csv', $this->params['pass'] ) ) {
+            $this->csv();
+        }*/
+}
 
     function mybids() {
         $this->index();
@@ -196,6 +217,31 @@ class BidsController extends AppController {
         /*$this->Filter->currentFilters = array();
         $this->Filter->currentFilters['user_id'] = array();
         $this->Filter->currentFilters['user_id']['types'] = array();*/
+    }
+
+    function csv() {
+        /*$results = $this->Bid->findAll(
+                $this->cond,
+                NULL,
+                $this->Pagination->order,
+                $this->Pagination->show,
+                $this->Pagination->page
+        );
+
+        print_r( $this );
+
+        $this->Csv->addRow( array( "bidID", "titleID", "title", "user", "type", "start_date", "end_date", "status", "flag", "notes" ) );
+        foreach( $results as $row ) {
+            $myRow = array( $row['Bid']['id'], $row['Bib']['id'], $row['Bib']['title'], $row['User']['username'], ($row['Bid']['partial']) ? 'Partial' : 'Complete', $row['Bid']['startdate'], $row['Bid']['enddate'], $row['Status']['status'], $row['Bid']['scansflag'], $row['Bid']['notes'] );
+            $this->Csv->addRow( $row );
+        }
+
+        echo $this->Csv->render( 'export.csv' );
+
+        exit(0);*/
+
+        $this->layout = 'csv';
+        $this->index();
     }
 
     function rss() {
