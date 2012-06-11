@@ -1,0 +1,16 @@
+
+<h1>Bibliographic data reporting utility</h1>
+<?php
+$html->addCrumb('biliographic reporting','/bibs/createReport');
+$html->addCrumb('admin','/pages/admin');
+if(!empty($report_form)) {	
+	//Build Form
+	echo $this->renderElement('report_form',$report_form);
+}
+else {	
+	//Build Form
+	echo $this->renderElement('report_display', array("report_data" => $report_data, "report_fields" => $report_fields, "report_name" => $report_name));
+}
+
+?>
+

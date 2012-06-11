@@ -1,0 +1,34 @@
+<?php $html->addCrumb('add a partial bid','/bids/partial');
+     //print_r($bid_so_far['title_id']);
+     $match_title = $this->data['Bid']['Bib']['title'];
+     $pretty_title = $this->data['Bid']['Bib']['norm_title'];
+     
+?>
+<h1>Add partial bid for <?php echo $match_title ?></h1>
+<form method="post" action="<?php echo $html->url('/bids/bidall')?>">
+
+    <input type="hidden" name="data[Bid][partial]" id="data[Bid][partial]" value="1" />
+    <input type="hidden" name="data[Bid][bib_id]"  value=" <?php echo $bid_so_far['bib_id'] ?>" id="BidTitleId" />
+    <input type="hidden" name="data[Bid][norm_title]"  value="<?php echo $pretty_title ?>" id="BidTitleNewtitle" />
+    <input type="hidden" name="data[Bid][user_id]" id="data[Bid][user_id]" value="<?php echo $othAuth->user('id')?>" />
+    <input type="hidden" name="data[Bid][status_id]" id="data[Bid][status_id]" value="1" />
+
+	    <p><b>Start date: </b>
+	 <?php echo $html->yearOptionTag('Bid/startdate',null,1700,2007,1700);?> 		
+    </p>
+     <p><b>End date: </b>
+        <?php echo $html->yearOptionTag('Bid/enddate',null,1700,2007,1923);?> 	 		
+    </p>
+
+     <p>
+    <b>Notes: </b>
+     <?php echo $html->textarea('Bid/notes', array('size' => '40')) ?>
+    </p>
+    
+     <p>
+    <b>Exceptions: </b>
+     <?php echo $html->textarea('Bid/excepts', array('size' => '40')) ?>
+    </p>
+    
+    <?php echo $html->submit('Submit bid') ?>
+</form>

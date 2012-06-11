@@ -1,0 +1,224 @@
+<?php
+$id = $bib['Bib']['id'];
+$html->addCrumb('view records','/bibs/index');
+$html->addCrumb('view record',"/bibs/view/$id"); 
+//var_dump($bib);
+$bids = $bib['Bid'];
+$holdings = $bib['Holding'];
+
+
+?>
+
+<h1><?php echo $bib['Bib']['title']?></h1>
+
+<p><small>Title: <?php echo $bib['Bib']['title']?></small></p>
+
+<p><small>Abbreviation: <?php echo $bib['Bib']['abbrev_title']?></small></p>
+
+<p><small>Author: <?php echo $bib['Bib']['author']?></small></p>
+
+<p><small>001: <?php echo $bib['Bib']['001']?></small></p>
+
+<p><small>002: <?php echo $bib['Bib']['002']?></small></p>
+
+<p><small>008: <?php echo $bib['Bib']['008']?></small></p>
+
+<p><small>ISSN: <?php echo $bib['Bib']['022']?></small></p>
+
+<p><small>Subjects: <?php echo $bib['Bib']['subjects']?></small></p>
+
+<p><small>Publisher: <?php echo $bib['Bib']['pub']?></small></p>
+
+<p><small>Basis of match (if any): <?php echo $bib['Bib']['match_basis']?></small></p>
+
+<p><small>Merged records (if any): 
+
+   <?php foreach ($oldrecordsmerged as $oldrecordmerged): ?>
+      
+   <?php  
+   //echo $oldrecordmerged['Bib']['new_id'] . " "; 
+   
+    echo  $html->link($oldrecordmerged['Bib']['id'], '/bibs/viewdepr/' . $oldrecordmerged['Bib']['id'], array('target' => '_blank') );
+    echo " ";
+
+   ?>
+   
+   <?php endforeach; ?>
+   
+   </small>
+</p>
+
+
+
+<!-- BS remmed out for now -->
+<!-- <p><small>Matches: <?php echo $matchlinker->generate_opac_links($bib['Bib']['matches'])?></small></p> -->
+
+
+<!--p><?php echo $html->link('Edit this record','/bibs/edit/'.$bib['Bib']['id']) ?></p-->
+
+<hr/>
+<h2>Holdings information</h2>
+<table>
+<tr>
+    <th>Owner</th>
+    <th>BHL location</th>
+    <th>Local ctrl</th>
+    <th>Holdings</th>
+    <th>Subject</th>    
+    <th>e-access?</th>
+    <th>Match basis</th>
+    <th>OCLC</th>
+    <!--th>Actions</th-->
+    </tr>
+<?php
+// Bump all the following to controller....???
+foreach ($holdings as $holding):
+// var_dump($holding);
+$user = $holding['User'];
+
+
+//var_dump($status);
+?>
+  <tr>
+      <td><?php if(!$user['username']) echo '&nbsp;'; else echo $user['username'];?></td>
+      <td><?php if(!$holding['place']) echo '&nbsp;'; else echo $holding['place'];?></td>
+      <td><?php if(!$holding['035']) echo '&nbsp;'; else echo $holding['035'];?></td>
+      <td><?php if(!$holding['hol_1'] && !$holding['hol_2'] && !$holding['hol_3' && !$holding['hol_4']]) echo '&nbsp;'; else echo $holding['hol_1'] . '</br>' .  $holding['hol_2'] . '</br>' . $holding['hol_3'] . '</br>' . $holding['hol_4'] ;?></td>
+      <td><?php if(!$holding['subject']) echo '&nbsp;'; else echo $holding['subject'];?></td>
+      <td><?php if(!$holding['e_856']) echo '&nbsp;'; else echo $holding['e_856']; ?></td>
+      <td><?php if(!$holding['match_basis']) echo '&nbsp;'; else echo $holding['match_basis'];?></td>
+      <td><?php if(!$holding['oclc']) echo '&nbsp;'; else echo $holding['oclc'];?></td>
+      <!--td>
+       <?php // Logic to determine if logged in users can see buttons for editing their records...
+          if ($othAuth and $user['id']== $othAuth->user('id'))
+          {
+          echo $html->link('Edit bid','/holdings/edit/'.$holding['id']) . "<br/>";
+          echo $html->link('Delete bid','/holdings/delete/'.$holding['id']);
+          }
+          else
+          {
+          $nobuttons = 1;
+          echo "You are not authorised to delete or edit these holdings.";
+          }
+          ?>
+        </td-->
+  </tr>
+ <?php endforeach; ?>
+</table>
+
+
+
+
+<hr/>
+<h2>Bid information</h2>
+
+<?php // This should really really really be in a helper, but I cannot figure out how to pull in data from other helpers (i.e. the HTML and oauth helpers) into a helper, or even if I should... oh well...poor repeititive code it is...
+ if ($bidbutton->draw_buttons_full($row) == 'none')
+                {
+                if ($othAuth->sessionValid())
+                {    
+            echo $html->formTag('/bids/bidall/' . $html->tagValue('Bid/id'));
+                echo "<input type=\"hidden\" name=\"data[Bid][partial]\"   id=\"data[Bid][partial]\" value=\"0\" />";
+                echo "<input type=\"hidden\" name=\"data[Bid][bib_id]\"  id=\"data[Bid][bib_id]\" value=\"";
+                echo $bib['Bib']['id'] . "\" />";
+                echo "<input type=\"hidden\" name=\"data[Bid][norm_title]\"  id=\"data[Bid][Bib][norm_title]\" value=\"";
+                echo $bib['Bib']['new_title'] . "\" />";                
+                echo "<input type=\"hidden\" name=\"data[Bid][user_id]\"   id=\"data[Bid][user_id]\" value=\"";
+                echo $othAuth->user('id'). '" />';
+       
+                echo "<input type=\"hidden\" name=\"data[Bid][status_id]\" id=\"data[Bid][status_id]\" value=\"1\" />";
+                echo	$html->submit('Bid for all ');
+       
+                echo "</form>";
+       
+                echo $html->formTag('/bids/bidpartial/' . $html->tagValue('Bid/id'));
+                echo "<input type=\"hidden\" name=\"data[Bid][bib_id]\"   id=\"data[Bid][bib_id]\" value=\"";
+                echo $bib['Bib']['id'] . "\" />";
+                echo "<input type=\"hidden\" name=\"data[Bid][Bib][norm_title]\"  id=\"data[Bid][Bib][norm_title]\" value=\"";
+                echo $bib['Bib']['new_title'] . "\" />";                                
+                echo "<input type=\"hidden\" name=\"data[Bid][Bib][title]\" id=\"data[Bid][Bib][title]\" value=\"";
+                echo $bib['Bib']['title'] . "\" />" . $html->submit('Partial bid') . "</form>" ;
+            }
+            elseif ($bidbutton->draw_buttons_full($bib) == '<b>Partial bid in place</b>')
+            {            echo "<b>Add another partial bid</b>";            echo $html->formTag('/bids/bidpartial/' . $html->tagValue('Bid/id'));
+                echo "<input type=\"hidden\" name=\"data[Bid][bib_id]\"   id=\"data[Bid][bib_id]\" value=\"";
+                echo $bib['Bib']['id'] . "\" />";
+                echo "<input type=\"hidden\" name=\"data[Bid][Bib][norm_title]\"  id=\"data[Bid][Bib][norm_title]\" value=\"";
+                echo $bib['Bib']['new_title'] . "\" />";                               
+                echo "<input type=\"hidden\" name=\"data[Bid][Bib][title]\" id=\"data[Bid][Bib][title]\" value=\"";
+                echo $bib['Bib']['title'] . "\" />" . $html->submit('Partial bid') . "</form>" ;
+                }
+                else
+                {
+                 echo "<p><b>Please " . $html->link('login','/users/login') . " to bid</b></p>";    
+                }  
+                }
+                else
+                {
+                echo $bidbutton->draw_buttons($row);
+                }
+  
+
+ ?>
+
+<table>
+<tr>
+    <th>Bidder</th>
+    <th>Bid type</th>
+    <th>Bid start</th>
+    <th>Bid end</th>
+    <th>Bid status</th>
+    <th>Notes</th>
+    <th>Actions</th>
+    </tr>
+<?php
+// Bump all the following to controller....???
+foreach ($bids as $bid):
+// var_dump($bid);
+$user = $bid['User'];
+$status = $bid['Status'];
+
+//var_dump($status);
+?>
+  <tr>
+      <td><?php echo $user['username']?></td>
+      <td><?php if ($bid['partial']) {echo 'Partial bid'; } else {echo 'Complete bid'; }  ?></td>
+      <td><?php if(!$bid['startdate']) echo '&nbsp;'; else echo $bid['startdate']; ?></td>
+      <td><?php if(!$bid['enddate']) echo '&nbsp;'; else echo $bid['enddate']; ?></td>
+      <td><?php echo $status['status']?></td>
+      <td><?php if(!$bid['notes']) echo '&nbsp;'; else echo $bid['notes']; ?></td>
+      <td>
+          <?php // Logic to determine if logged in users can see buttons for editing their records...
+          if ($othAuth and substr($user['username'],0,3) == substr($othAuth->user('username'),0,3))
+          {          //BS 14/02/08 switched off this so full bids can be edited to say completed.
+          //if($bid['partial'] ==1)
+          //  {
+            echo $html->link('Edit bid','/bids/edit/'.$bid['id']) . "<br/>";
+          //  }                      echo $html->link('Delete bid','/bids/delete/'.$bid['id']);
+          }
+          else
+          {          echo "You are not authorised to delete or edit this bid, please contact the bid owner";
+          }
+          ?>
+      </td>
+
+  </tr>
+ <?php endforeach; ?>
+</table>
+
+<p>
+
+       <small class=resetdup>
+
+		<form method="post" action="<?php echo $html->url('/bibs/undup')?>">
+		
+		<input type="hidden" name="idofmergedrec" value="<?php echo $id?>" />
+		
+				
+		<?php echo $html->submit('', array('accesskey' => 'u')) ?>(admin only)
+
+		</form>
+
+       </small>
+
+</p>

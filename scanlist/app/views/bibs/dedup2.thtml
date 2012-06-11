@@ -1,0 +1,7 @@
+<?php
+echo "id to keep: " . $idtokeep . "<br/>";
+echo "id(s) to delete: " . var_dump($tomergeids) . "<br/>";
+
+echo "--------------------<br/>";
+echo "--------------------<br/>";
+?>

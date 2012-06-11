@@ -1,0 +1,139 @@
+<h1>View records</h1>
+<form method="post" action="<?php echo $html->url('/bibs')?>">
+    <p>
+         <!--  Title:
+        <?php echo $html->input('Bib/title', array('size' => '40'))?>
+        <?php echo $html->tagErrorMsg('Bib/title', 'Search term required') ?>
+    </p>
+
+    <p>
+      <?php echo $html->submit('Search') ?>    -->
+      
+<table>
+<tr>
+<td>
+<?php
+   $html->addCrumb('view records','/bibs/index');
+   $pagination->setPaging($paging);
+   #echo $html->link('tips','/pages/help#h2a', array('target'=>'_blank'));
+   echo ($filter->setFiltering($filters));
+   ?>
+   <!-- BS later -->
+	<!--test-comment-->
+    <!--?php if ($othAuth->sessionValid()) echo $html->link('Remove duplicates','/bibs/dedupselect'); ?-->
+</td>
+</tr>
+</table>
+
+<?php echo $html->link('Dedup view','/bibs/dedupselect', array('accesskey' => 'd')); ?>
+
+
+
+
+<?php echo $pagination->prevPage('<<'); echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $pagination->nextPage('>>');?>
+
+<?php echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'; echo "Records found: " .  $pagination->_pageDetails['recordCount']; ?>
+
+<?php echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'; echo "Current page: " .  $pagination->_pageDetails['page']; ?>
+
+<table id="results">
+<tr>
+    <th><?php echo $pagination->sortLink('id', 'Title ID', 1); ?></th>
+    <th><?php echo $pagination->sortLink('newtitle_b', 'Title'); ?></th>
+    <th><?php echo $pagination->sortLink('author', 'Author'); ?></th>
+    <th><?php echo $pagination->sortLink('260', 'Publisher'); ?></th>
+    <th><?php echo $pagination->sortLink('210', 'Abbrev'); ?></th>
+    <th>Matches</th>
+    <th>Actions</th>
+    <th>Bids?</th>
+
+</tr>
+
+<!--?php var_dump($Bibs);?-->
+
+<?php foreach ($Bibs as $row): ?>
+
+<tr>
+    <td><a id="row<?php echo $row['Bib']['id'] ?>"></a><?php echo $row['Bib']['id'] ?></td>
+    <td><?php if(!$row['Bib']['t245stripped']) echo '&nbsp;'; else echo str_replace('@@@a','',$row['Bib']['t245stripped']); ?></td>    
+    <td><?php if(!$row['Bib']['author']) echo '&nbsp;'; else echo $row['Bib']['author']; ?></td>    
+    <td><?php if(!$row['Bib']['260']) echo '&nbsp;'; else echo $row['Bib']['260']; ?></td>
+    <td><?php if((!$row['Bib']['210']) && ($row['Bib']['abbrev_title'])) echo $row['Bib']['abbrev_title']; elseif (!$row['Bib']['abbrev_title']) echo '&nbsp;'; else echo $row['Bib']['210']; ?></td>
+
+   <td>   
+   
+         <?php          
+		 $holdings = $row['Holding'];
+                 
+                 $display_holdings = array();
+
+                 // Merge holdings information
+                 foreach( $holdings as $holding ) {
+                     $display_holdings[$holding['place']] = $holding;
+                 }
+
+		 foreach ($display_holdings as $holding)
+		 {
+		    //echo $holding['place'];
+		    echo $matchlinker->generate_opac_links($holding['place'], $holding['035'], $holding['oclc'], $row['Bib']['001']);
+		    //echo "<br>";
+		 }                  
+         ?>
+        
+   </td>
+      
+
+
+    <td>
+        <?php echo $html->link('more...','/Bibs/view/' . $row['Bib']['id']); ?><br/>
+        <?php //echo $html->link('Edit','/Bibs/edit/' . $row['Bib']['id']); ?>
+     </td>
+     <td>
+ <?php
+        
+            if ($bidbutton->draw_buttons($row) == 'none')
+                {
+			if ($othAuth->sessionValid())
+			{    			//echo $html->formTag('/bids/bidall/' . $html->tagValue('Bid/id'));
+			//    echo "<input type=\"hidden\" name=\"data[Bid][partial]\" id=\"data[Bid][partial]\" value=\"0\" />";
+			//    echo "<input type=\"hidden\" name=\"data[Bid][bib_id]\"  id=\"data[Bid][bib_id]\" value=\"";
+			//    echo $row['Bib']['id'] . "\" />";
+			//    echo "<input type=\"hidden\" name=\"data[Bid][user_id]\" id=\"data[Bid][user_id]\" value=\"";
+			//    echo $othAuth->user('id'). '" />';
+
+			//    echo "<input type=\"hidden\" name=\"data[Bid][status_id]\" id=\"data[Bid][status_id]\" value=\"1\" />";
+			//    echo	$html->submit('Bid for all ');
+
+			//    echo "</form>";
+
+			    //echo $html->formTag('/bids/bidpartial/' . $html->tagValue('Bid/id'));
+			    //echo "<input type=\"hidden\" name=\"data[Bid][bib_id]\"   id=\"data[Bid][bib_id]\" value=\"";
+			    //echo $row['Bib']['id'] . "\" />";
+			    //echo "<input type=\"hidden\" name=\"data[Bid][Bib][title]\" id=\"data[Bid][Bib][title]\" value=\"";
+			    //echo $row['Bib']['title'] . "\" />" . $html->submit('Partial bid') . "</form>" ;
+			}
+			else
+			{
+		       echo "<p><b>Please " . $html->link('login','/users/login') . " to view bids</b></p>"; 
+			}  
+                }
+                else
+                {                echo $bidbutton->draw_buttons($row);                }
+           
+ 
+            
+ ?>
+
+    </td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<br />
+<br />
+ <p>Select a page:</p>
+<?php echo $pagination->pageNumbers(NULL, NULL, ' '); ?>
+
+
+</table>
+

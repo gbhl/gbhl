@@ -1,0 +1,165 @@
+<html>
+<head>
+<title>
+<script language=php> echo $mmconfig->website;
+</script>
+</title>
+
+<!-- meta tags here -->
+
+<META http-equiv="expires" content="0">
+
+<!--link to css -->
+<LINK REL=STYLESHEET HREF="css/sitestl.css" TYPE="text/css">
+
+
+<!--link to js -->
+
+
+<script src="js/main.js" language="javascript" type="text/javascript">
+</script>
+<noscript>Javascript must be supported by your browser and switched on for this website to work correctly.</noscript>
+
+</head>
+<body bgcolor="#3399CC" text="#ffffff" leftmargin="0" topmargin="0" link="#ffffcc" alink="#ffffcc" vlink="#ffffcc">
+
+<!-- This is the banner code -->
+<table align="center" border=0 width=480 height=60><tr><td align=center><b>BHL mark 1 ...</b></td></tr></table>
+<!-- End of the banner code -->
+
+<!-- container --->
+<table width="80%" border="1" cellspacing="0" cellpadding="0" bgcolor="#336699">
+  <TR>
+    <TD vAlign=top align=right width="83%" height="5%" colspan=2><BR>
+     &nbsp;
+    </TD>
+     <TD align=right width="17%" height="5%">
+     <div>
+     <script language=php> if(isset($mmcookie) && $mmcookie != '') echo "<a
+         href=logout.php><img border=0 src='images/sign_out.gif' align=right width=50 height=39></a>";
+        </script>
+     &nbsp;
+     </div>
+     </TD>
+  </TR>
+  <TR>
+    <TD height="10%" width="21%"><!-- #BeginEditable "5" -->
+      <TABLE height="100%" cellSpacing=0 cellPadding=0 width=173 border=0>
+        <TBODY>
+        <TR>
+          <TD width=19>&nbsp;</TD>
+          <TD vAlign=bottom align=left width=154><A
+            href="index.php">home</A></TD></TR>
+        <TR><TD colspan="2">&nbsp;</TD></TR>
+         </TBODY>
+     </TABLE><!-- #EndEditable -->
+
+    </TD>
+    <TD vAlign=bottom width="79%" height="10%" colspan="2" align="right">
+    <script language=php> if($mmcookie == '' || !isset($mmcookie)) {
+         echo "<!--a class='menu_prim' href='register.php'>&nbsp;register</a>&nbsp;|-->";
+         echo "<!--a class='menu_prim' href='contact.php'>&nbsp;contact</a>&nbsp;-->";
+         echo "<!--a class='menu_prim' href='help.php'>&nbsp;help</a>&nbsp;-->";
+         }
+       else {
+         echo "<a class='menu_prim' href='index.php'>&nbsp;home</a>&nbsp;|";
+         echo "<a class='menu_prim' href='search.php?action=newsearch'>&nbsp;search</a>&nbsp;|";
+         echo "<a class='menu_prim' href='search_press.php?action=newsearch'>&nbsp;search for a pressmark</a>&nbsp;|";
+         echo "<a class='menu_prim' href='contact.php'>&nbsp;contact</a>&nbsp;";
+         echo "<a class='menu_prim' href='help.php'>&nbsp;help</a>&nbsp;";
+         }
+   </script>
+
+</TD>
+</TR>
+</TABLE>
+
+<!-- end header table>
+
+<!-- create new main table with left hand column and right hand as main and embed another main table within the right hand column -->
+
+<table width="90%" border="0" cellspacing="0" cellpadding="0" bgcolor="#336699">
+<TR>
+    <TD height=885 width="10%" vAlign=top border=0>
+      <table width="10%" bgcolor="#CCCCFF">
+       <tr>
+       <td>
+        <div class="tip" align="left">
+        Searches
+        </div>
+       </td>
+      </tr>
+       <tr>
+       <td>
+        <a accesskey="s" href="search.php?action=newsearch" class="actionbut">catalogue</a>
+       </td>
+      </tr>
+       <tr>
+       <!--td>
+        <a accesskey="s" href="search_press_subj.php?action=newsearch&searchmode=search&searchtype=subject" class="actionbut">subject</a>
+       </td>
+      </tr>
+       <tr>
+       <td>
+        <a accesskey="s" href="search_press_subj.php?action=newsearch&searchmode=search&searchtype=pressmark" class="actionbut">pressmark</a>
+       </td-->
+      </tr>
+
+
+
+       <!--tr>
+       <td>
+        <a accesskey="s" href="search_press.php?action=newsearch" class="actionbut">pressmark</a>
+       </td>
+      </tr-->
+
+      <tr>
+	     <td>
+	      <!--a href="newcat_a.php?action=create" class="actionbut">add</a><div class="tip" align="left">add</div-->
+	      </td>
+      </tr>
+      <tr>
+	     <td>
+	      <!--a href="search.php?action=newsearch" class="actionbut">update</a><div class="tip" align="left">update</div-->
+	      </td>
+      </tr>
+      <tr>
+	     <td>
+	      <!--a href="search.php?action=newsearch" class="actionbut">delete</a><div class="tip" align="left">delete</div-->
+	      </td>
+      </tr>
+
+       	<tr>
+	     <td>
+	     <div class="tip" align="left">
+	      -------------
+	      </div>
+	      </td>
+      </tr>
+       	<tr>
+	     <td>
+        &nbsp;
+        </td>
+      </tr>
+      <!--tr>
+       <td>
+        <div class="tip" align="left">
+        Browse
+        </div>
+       </td>
+      </tr-->
+      <!--tr>
+	     <td>
+	      <a accesskey="s" href="search_press_subj.php?action=newsearch&searchmode=browse&searchtype=subject" class="actionbut">subject</a>
+	      </td>
+      </tr-->
+
+
+
+      </table>
+    </TD>
+    <TD height=885 width="1%" vAlign=top>|
+            </TD>
+
+    <TD colSpan=3 height=885 width="90%">
+

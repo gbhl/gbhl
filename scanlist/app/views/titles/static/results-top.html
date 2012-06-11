@@ -1,0 +1,121 @@
+      <table width="98%" border="0" cellspacing="0" cellpadding="0" height="1%">
+        <tr>
+          <td class="mainheading" height="1%" align="left" valign="top">&nbsp;&nbsp;&nbsp;&nbsp;
+          <?php echo "$globvars->brief_offers_heading"; ?>
+          </td>
+        </tr>
+      </table>
+
+      <table width="98%" border="0" cellspacing="0" cellpadding="0" height="466" bgcolor="#FFFFFF">
+        <tr>
+          <td valign="top" height="582"><!-- #BeginEditable "OnlyScript" --><br>
+            <table width="98%" border="0" cellspacing="0" cellpadding="0" height="68">
+              <tr>
+                <td align="center" valign="middle" width="48" height="237">&nbsp;</td>
+                <td align="left" valign="top" width="782" height="237">
+                  <table width="98%"  border="0" cellspacing="0" cellpadding="0" height="66">
+
+
+                    </tr>
+                    <tr>
+                      <td height="2%" colspan="7" width="580"><font size="2" face="Geneva, Arial, Helvetica,san-serif">
+<form method=post name="searchform" action="search.php">
+                      <input type=hidden name=startnum value="<script language=php> if (!$startnum) echo "&nbsp;"; else echo $startnum ; </script>">
+                      <input type=hidden name=endnum value="<script language=php> if (!$endnum) echo "&nbsp;"; else echo $endnum ; </script>">
+                      <input type=hidden name=num_per_page value="<script language=php> if (!$num_per_page) echo "&nbsp;"; else echo $num_per_page ; </script>">
+                      <input type=hidden name=sql value="<script language=php> if (!$sql) echo "&nbsp;"; else echo $sql ; </script>">
+                      <input type=hidden name=num_rows_set value="<script language=php> if (!$num_rows_set) echo "&nbsp;"; else echo $num_rows_set ; </script>">
+                      <input type=hidden name=count value="<script language=php> if (!$count) echo "&nbsp;"; else echo $count ; </script>">
+                      <input type=hidden name=classification value="<script language=php> if (!$classification) echo "&nbsp;"; else echo $_POST['classification'] ; </script>">
+                      <input type=hidden name=library_choice value="<script language=php> if (!$library_choice) echo "&nbsp;"; else echo $_POST['library_choice'] ; </script>">
+                      <input type=hidden name=mapped value="<script language=php> if (!$mapped) echo "&nbsp;"; else echo $mapped[$_POST['mapped']] ; </script>">
+                      <input type=hidden name=sql_done value="<script language=php> if ($sql_done) echo $sql_done; else echo "&nbsp;" ; </script>">
+
+
+                      </font><br>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td height="2%" colspan="7" width="580"><font size="2" face="Geneva, Arial, Helvetica,san-serif">
+                      There are <?php echo "$num_rows_set"; ?> record matches. Numbers <?php $begin = ($startnum + 1); echo "$begin to $endnum"; ?>
+
+                      &nbsp;&nbsp;
+
+<!--- go back to previous page link if previous pages exist, or hide link --->
+
+                      <script language=php>
+                      if ($startnum < $num_per_page)
+                          echo "&nbsp;&nbsp;<!---";
+                      </script>
+
+
+                      <input class="actionbut" accesskey="p" type="submit" name="Submit" value="<?php echo "&lt;&lt;"; ?>">
+
+
+                      <script language=php>
+                      if ($startnum < $num_per_page)
+                          echo "-->";
+                      </script>
+
+					  &nbsp;&nbsp;&nbsp;&nbsp;
+
+<!--- go forward to next page link if next pages exist, or hide link --->
+
+                      <script language=php>
+                      if (($startnum + $num_per_page) > $num_rows_set)
+                          echo "&nbsp;&nbsp;<!---";
+                      </script>
+
+                      <input class="actionbut" accesskey="n" type="submit" name="Submit" value="<?php echo "&gt;&gt;"; ?>">
+
+                      </font>
+
+                      <script language=php>
+                      if (($startnum + $num_per_page) > $num_rows_set)
+                          echo "-->";
+                      </script>
+<!-- give a refine search option here -->
+
+                      &nbsp;&nbsp;&nbsp;&nbsp;
+
+                      <a href="http://157.140.9.81:81/bhl_dump/search.php?action=newsearch&search_string=<?php echo "{$_POST['search_string']}" ?>" class="actionbut">refine search</a>
+
+
+
+</form>
+                      </td>
+                    </tr>
+
+                    <tr>
+					  <td height="2%" colspan="7" width="580">&nbsp;
+					  </td>
+                    </tr>
+
+                    <tr bgcolor="#FFFFC0" class="briefresultrowheading">
+                      <td height="7%" width="2%">
+                        <div align="center"><b>
+                          <font face="Geneva, Arial, Helvetica, san-serif" size="2" color="#000000">#</font></b></div>
+                      </td>
+                      <td height="7%" width="25%">
+                        <div align="left"><b>
+                          <font face="Geneva, Arial, Helvetica, san-serif" size="2" color="#000000">Title</font></b></div>
+                      </td>
+                      <td height="7%" width="25%">
+                        <div align="left"><b>
+                          <font face="Geneva, Arial, Helvetica, san-serif" size="2" color="#000000">Author</font></b></div>
+                      </td>
+                      <td height="7%" width="25%">
+                      <div align="left"><b>
+                      <font color="#000000" face="Geneva, Arial, Helvetica, san-serif" size="2">Publisher</font></b></div>
+                      </td>
+                      <td height="7%" width="10%">
+                        <div align="left"><b>
+                          <font face="Geneva, Arial, Helvetica, san-serif" size="2" color="#000000">ctrl 001</font></b>
+                        </div>
+                      </td>
+                      </tr>
+
+                    <tr>
+                      <td height="2%" colspan="7" width="580"><font size="2" face="Geneva, Arial, Helvetica,san-serif">&nbsp;</font><br>
+                      </td>
+                    </tr>

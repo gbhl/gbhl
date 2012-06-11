@@ -1,0 +1,127 @@
+<?php
+$id = $mytitle['Title']['id'];
+$thiscatkey = $mytitle['Title']['catkey'];
+//var_dump($mytitle);
+$html->addCrumb('Control Panel','/pages/control');
+$html->addCrumb('Search for records','/titles/index');    ?>
+
+<h1>Edit title summary details</h1>
+
+
+          <p>              
+          
+              <?php echo $html->link('Check bids...', '/Bibs/viewfromedittitle/' . rtrim($thiscatkey), array('target' => '_blank') ); 
+              
+              ?>
+         </p>
+
+<form method="post" action="<?php echo $html->url('/titles/edit')?>">
+     <?php echo $html->hidden('Title/id'); ?>
+
+    <p>
+        Catkey:
+        <?php echo $html->hidden('Title/catkey') ?>                        
+        <!--?php echo $html->input('Title/catkey', array('size' => '60'))?-->
+        <?php echo $thiscatkey; ?>
+        </br>
+        <small>(created by user: <?php echo $othAuth->user('username')?>)</small>
+    </p>
+
+
+    <p>
+        Title control:
+        <?php echo $html->input('Title/title_control', array('size' => '60'))?>
+        <?php echo $html->tagErrorMsg('Title/title_control', 'Title is required.') ?>
+    </p>
+
+
+
+    <p>
+        Title:
+        <?php echo $html->input('Title/title', array('size' => '60'))?>
+        <?php echo $html->tagErrorMsg('Title/title', 'Title is required.') ?>
+    </p>
+
+         <p>
+        Publisher:
+        <?php echo $html->input('Title/pub', array('size' => '40'))?>
+        </p>
+
+
+         <p>
+        Pressmark:
+        <?php echo $html->input('Title/pressmark', array('size' => '40'))?>
+        </p>
+
+
+     <p>
+        Most recent copyright date range for this title:
+        <?php 
+          echo  $html->selectTag('Title/highest_copyright_band', $Highestcopyrights, NULL ,array(),NULL,0);
+        ?>                        
+        
+        </p>
+
+      <p>
+        Is any of this title scannable by Internet Archive?:
+         <?php          
+         echo  $html->selectTag('Title/any_scannable_status', $Any_scannable_statuses, NULL ,array(),NULL,0);                  
+         ?>                                
+        </p>
+        
+      <p>
+        Is any of this title pre-1860 and out of copyright?:
+         <?php          
+         echo  $html->selectTag('Title/any_pre_1860', $Any_pre_1860_statuses, NULL ,array(),NULL,0);                  
+         ?>                                
+        </p>
+  
+        
+      <p>
+        Reasons:
+        <?php echo $html->textarea('Title/not_scannable_reason', array('cols' => '50', 'rows' => '10')) ?>
+        </p>
+        
+        
+	************************
+
+
+	<p><small>Number of volumes (pre-1860): <?php echo $html->input('Title/num_vols_pre1860', array('size' => '40'))?></small></p>
+
+	<p><small>Number of volumes (post-1860): <?php echo $html->input('Title/num_vols_post1860', array('size' => '40'))?></small></p>
+
+	<p><small>
+
+
+	      Bid placed (pre-1860)?: <?php echo  $html->selectTag('Title/pre_1860_bid_placed', $Bid_placed, NULL ,array(),NULL,0);?>&nbsp;&nbsp;&nbsp;&nbsp;
+	      | Bid years: <?php echo $html->input('Title/years_bid_pre1860', array('size' => '40'))?>
+	      
+	      
+
+
+	</small></p>
+
+
+	<p><small>
+
+
+               Bid placed (post-1860)?: <?php echo  $html->selectTag('Title/post_1860_bid_placed', $Bid_placed, NULL ,array(),NULL,0);?>&nbsp;&nbsp;&nbsp;&nbsp;
+	      | Bid years: <?php echo $html->input('Title/years_bid_post1860', array('size' => '40'))?>
+
+
+	</small></p>
+
+
+	<p><small>Start pulling next shift from...: <?php echo $html->input('Title/start_at', array('size' => '40'))?></small></p>
+
+
+	<p><small>Title scan status: <?php echo  $html->selectTag('Title/title_status', $Title_scan_status, NULL ,array(),NULL,0);?></small></p>
+
+	************************
+
+      
+    <p>
+        <?php echo $html->submit('[e]dit', array('accesskey' => 'e')) ?>
+    </p>
+</form>
+

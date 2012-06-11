@@ -1,0 +1,35 @@
+<?php
+$html->addCrumb('view records','/matches/index');
+$html->addCrumb('Add record','/matches/add'); ?>
+<h1>Add a Bibliographic record</h1>
+<form method="post" action="<?php echo $html->url('/matches/add')?>">
+
+    <p>
+        Title:
+        <?php echo $html->input('Bib/title', array('size' => '40'))?>
+        <?php echo $html->tagErrorMsg('Bib/title', 'Title is required.') ?>
+    </p>
+    <p>
+
+        001:
+            <?php echo $html->input('Bib/001', array('size' => '40'))?>
+        </p>
+      <p>
+        008:
+        <?php echo $html->input('Bib/008', array('size' => '40'))?>
+        </p>
+      <p>
+        ISSN:
+        <?php echo $html->input('Bib/022', array('size' => '40'))?>
+        </p>
+      <p>
+         Publisher:
+        <?php echo $html->textarea('Bib/pub', array('size' => '40')) ?>
+      </p>
+      <p>
+        Bibs:
+    </p><?php echo $html->textarea('Bib/matches', array('size' => '40')) ?>
+    <p>
+        <?php echo $html->submit('Save') ?>
+    </p>
+</form>

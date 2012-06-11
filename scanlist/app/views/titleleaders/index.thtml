@@ -1,0 +1,109 @@
+<h1>View records</h1>
+<form method="post" action="<?php echo $html->url('/titleleaders')?>">
+
+    <p>
+      
+      
+<table>
+<tr>
+<td>
+<?php
+   $html->addCrumb('view records','/titleleaders/index');
+   $pagination->setPaging($paging);
+   echo $html->link('tips','/pages/help#h10', array('target'=>'_blank'));
+   echo ($filter->setFiltering($filters));
+   ?>
+   <!-- BS later -->
+    <!--?php if ($othAuth->sessionValid()) echo $html->link('Remove duplicates','/titleleaders/dedupselect'); ?-->
+</td>
+</tr>
+</table>
+
+
+
+
+<?php echo $pagination->prevPage('<<'); echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $pagination->nextPage('>>');?>
+
+<?php echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'; echo "Records found: " .  $pagination->_pageDetails['recordCount']; ?>
+
+<?php echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'; echo "Current page: " .  $pagination->_pageDetails['page']; ?>
+
+<table id="results">
+<tr>
+    <th><?php echo $pagination->sortLink('id', '#', 1); ?></th>
+    <th><?php echo $pagination->sortLink('title_short', 'Title'); ?></th>
+    <th>ISSN</th>
+    <th><?php echo $pagination->sortLink('manualattnflag', 'X'); ?></th>
+    <th><?php echo $pagination->sortLink('itemcount', 'Items'); ?></th>
+    <th>Auto Hldg.</th>
+    <th>Man Hldg.</th>
+    <th>Institution</th>    
+    <th>Actions</th>
+
+</tr>
+
+<!--?php var_dump($Titleleaders);?-->
+
+<?php foreach ($Titleleaders as $row): ?>
+
+<tr>
+    <td><a id="row<?php echo $row['Titleleader']['id'] ?>"></a><?php echo $row['Titleleader']['id'] ?></td>
+    <td>
+    <?php 
+    
+    if(!$row['Titleleader']['title_short']) 
+        echo '&nbsp;'; 
+    else 
+    {
+        $newshorttitle = str_replace(":","", $row['Titleleader']['title_short']);
+        $newshorttitle = str_replace(";","", $newshorttitle);
+        $newshorttitle = str_replace(",","", $newshorttitle);
+        $newshorttitle = str_replace(".","", $newshorttitle);
+        $newshorttitle = str_replace("*","", $newshorttitle);
+        $newshorttitle = str_replace("[","", $newshorttitle);
+        $newshorttitle = str_replace("]","", $newshorttitle);
+        echo $newshorttitle ; 
+    }
+    
+    
+    ?></td>
+    
+    <td><?php if(!$row['Titleleader']['ISSN']) echo '&nbsp;'; else echo $row['Titleleader']['ISSN'];?></td>
+    
+    <td><?php if(!$row['Titleleader']['title_short']) echo '&nbsp;'; else echo $row['Titleleader']['manualattnflag'];?></td>
+    
+    
+    <td><?php if(!$row['Titleleader']['itemcount']) echo '&nbsp;'; else echo $row['Titleleader']['itemcount'];?></td>
+    
+    <td><?php echo $row['Titleleader']['lowest_vol'] . ',' . $row['Titleleader']['highest_vol'] . ',' . $row['Titleleader']['lowest_year'] . ',' . $row['Titleleader']['highest_year'] ; ?></td>
+    
+    <td><?php if (!$row['Titleleader']['man_summ_holdings']) echo '&nbsp;'; else echo $row['Titleleader']['man_summ_holdings']; ?></td>
+
+    <td><?php if (!$row['Titleleader']['contributor']) echo '&nbsp;'; else echo $row['Titleleader']['contributor']; ?></td>  
+
+
+    <td>
+        <?php echo $html->link('view','/Titleleaders/view/' . $row['Titleleader']['id']); ?><br/>        
+        <?php echo $html->link('edit','/Titleleaders/edit/' . $row['Titleleader']['id']); ?>
+         <?php 
+         if($row['Titleleader']['titleident'])
+         {
+           $formedurl = $row['Titleleader']['titleident'];
+            echo $html->link('bhl','http://www.biodiversitylibrary.org/bibliography/' . $formedurl	, array('target' => '_blank')); 
+         }
+         
+         ?><br/>                
+         
+     </td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<br />
+<br />
+ <p>Select a page:</p>
+<?php echo $pagination->pageNumbers(NULL, NULL, ' '); ?>
+
+
+</table>
+

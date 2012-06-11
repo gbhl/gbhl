@@ -1,0 +1,48 @@
+<?php
+$id = $bib['Bib']['id'];
+$html->addCrumb('view records','/bibs/index');
+$html->addCrumb('view record',"/bibs/view/$id"); 
+$html->addCrumb('edit record',"/bibs/edit/$id"); ?>
+<h1>Edit a Bibliographic record</h1>
+<form method="post" action="<?php echo $html->url('/bibs/edit')?>">
+     <?php echo $html->hidden('Bib/id'); ?>
+    <p>
+        Title:
+        <?php echo $html->textarea('Bib/title', array('cols' => '40', 'rows' => '8')) ?>
+        <?php echo $html->tagErrorMsg('Bib/title', 'Title is required.') ?>
+    </p>
+
+         <p>
+        Abbreviation:
+        <?php echo $html->input('Bib/abbrev_title', array('size' => '40'))?>
+        </p>
+
+
+     <p>
+        Author:
+        <?php echo $html->input('Bib/author', array('size' => '40'))?>
+        </p>
+
+      <p>
+        008:
+        <?php echo $html->input('Bib/008', array('size' => '40'))?>
+        </p>
+      <p>
+        ISSN:
+        <?php echo $html->input('Bib/022', array('size' => '40'))?>
+        </p>
+      <p>
+         Publisher:
+        <?php echo $html->textarea('Bib/pub', array('size' => '40')) ?>
+      </p>
+
+      <p>
+         Subjects:
+        <?php echo $html->textarea('Bib/subjects', array('cols' => '40', 'rows' => '8')) ?>
+      </p>
+      
+    <p>
+        <?php echo $html->submit('Save') ?>
+    </p>
+</form>
+</form>

@@ -1,0 +1,84 @@
+/*
+BHL serials union catalogue mark 2 - to do :
+
+
+TOP TIPS 
+///////////////////////
+
+1) Adding new users -NOTE FOR ADMINS
+Currently done in the MYSQL DB 
+Inset username and password. Password string must be entered into database as an MD5 - various websites can gerneate this from your string...
+All other details optional
+
+INSERT INTO users VALUES (1,'root','e10adc3949ba59abbe56e057f20f883e','Firstname Lastname','user@example.com','0000-00-00 00:00:00',1,1);
+
+2)  More top Cake tips at http://www.avatarfinancial.com/pages/cake/
+
+/////////////////////////////
+
+3) Add notes field for people placing a full bid (in edit view to save clicks?)
+
+
+
+Fixes:
+------------------
+
+
+To do:
+------------------
+
+A) Levels of association in reporting module (if required)
+
+B) RSS feed 
+
+
+Changes log:
+--------------------
+- Edit / add views for holdings
+
+- BATCH UPDATE SCRIPT
+
+- DATE SAVING FOR PARTIAL BIDS -> Sorted, but you still get error messages ?????????
+ 
+- Reporting capability - http://bakery.cakephp.org/articles/view/144
+
+- Generate reports on scanned / to be scanned for each institution
+
+- Bid buttons in matches view screen   - add extra logic for partial bids
+ - Edit bid (if it is yours)
+ - Delete bid (if it is yours)
+-  Add filters & actions to bid index
+
+Added bids model - with working functions to save partial and full bids
+
+General- fix application model / folder structure - turn matches index back into a browse list and transfer 'splash' screen to application level index page             -DONE
+
+Added application wide controller to enable app wide authentication - documented at:
+
+
+Links:
+- Add internal and external hypertext links using html helpers...       -DONE
+
+Search:
+- Search form - multiple                               -DONE    Taken from http://mho.ath.cx/~cake/exams/filter/
+- Add search functionality from old site               -DONE
+- filters                                              -DONE
+- Advanced search                                      - NECESSARY ???
+
+Browse:
+-Browse by options                            -DONE WITH FILTERS - MAY NEED EXPLANATION / NEW INTERFACE HELPER ???
+
+Full record display:
+- separate 002's into hyperlinks back to original OPAC's...  -DONE
+
+Edit:
+- add user authentication                                    -DONE  - http://bakery.cakephp.org/articles/view/148
+
+
+Other:
+- Alter links in bottom left                            -DONE
+- splash screen                                         -DONE
+- contacts page                                         -DONE
+
+
+*/

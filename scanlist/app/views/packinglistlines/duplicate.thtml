@@ -1,0 +1,94 @@
+<?php echo $javascript->link('selector.js')?>
+<?php echo $javascript->link('validator.js')?>
+
+<?php
+$html->addCrumb('Control Panel','/pages/control');
+$html->addCrumb('Add record','/packinglistlines/add'); 
+
+//var_dump($thetitlenamevalue);
+?>
+<h1>Add line to packing list</h1>
+
+
+<p>&nbsp;</p>
+<hr />
+
+<form method="post" action="<?php echo $html->url('/packinglistlines/add')?>" onSubmit="return checkrequired_packinglistline(this)">
+
+
+
+         <p>
+           <?php 
+           
+           if ($thetitlenamevalue) // only give publisher details if we've tried to link to one sucessfully.
+           {
+           echo "***Title Details***  Title: <b>" . $thetitlenamevalue; 
+           echo "</b>; Pressmark: <b>" . $thepressmarknamevalue;
+           echo "</b>; Catkey: <b>" . $thecatkeyvalue;
+           echo "<hr />";
+           }
+           
+           ?>
+                    
+           
+         </p>
+
+
+
+
+
+    <p>
+        Line number: 
+        
+               
+        
+        <?php echo $html->tagErrorMsg('Packinglistline/catkey', 'catkey is required!') ?>
+        <?php echo $html->hidden('Packinglistline/username', array('value' => $othAuth->user('username')))?>
+        <?php echo $othAuth->user('username');?>
+        <?php echo $html->hidden('Packinglistline/title_id', array('value' => $thecatkeyvalue))?>
+        <?php echo $html->hidden('Packinglistline/packinglist_id', array('value' => $thepackinglistidvalue))?>       
+        
+    </p>
+    <p>
+
+        Chronology start: 
+            <?php echo $html->input('Packinglistline/chronology_start', array('size' => '20','value' => $chronology_startvalue))?>              
+            <?php echo $html->tagErrorMsg('Packinglistline/chronology_start', 'Start chronology is required!') ?>
+        </p>
+      <p>
+        Chronology end:
+        <?php echo $html->input('Packinglistline/chronology_end', array('size' => '80'))?>
+      </p>
+      <p>
+        Enumeration start:
+        <?php echo $html->input('Packinglistline/enum_start', array('size' => '80'))?>
+        <?php echo $html->tagErrorMsg('Packinglistline/enum_start', 'Start date is required!') ?>        
+      </p>
+      
+      <p>
+        Enumeration end:
+        <?php echo $html->input('Packinglistline/enum_end', array('size' => '80'))?>        
+      </p>
+   
+      <p>
+        Series:
+        <?php echo $html->input('Packinglistline/series', array('size' => '80'))?>
+      </p>
+      
+     
+      <p>      
+       Line Status:        
+        <?php         
+          if (!$this->params['form']['data']['Packinglistline']['agreement_status'])          
+             $Agreementstatusesselect = 1;       
+          echo  $html->selectTag('Packinglistline/line_status', $Agreementstatuses, $Agreementstatusesselect);
+          
+        ?>                        
+       </p>
+       
+
+
+    <p>
+        <?php echo $html->submit('[A]dd line', array('accesskey' => 'a')) ?>
+    </p>
+</form>
