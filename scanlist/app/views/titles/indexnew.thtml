@@ -1,0 +1,158 @@
+<h1>View records</h1>
+<form method="post" action="<?php echo $html->url('/bibs/indexnew')?>">
+    <p>
+         <!--  Title:
+        <?php echo $html->input('Bib/title', array('size' => '40'))?>
+        <?php echo $html->tagErrorMsg('Bib/title', 'Search term required') ?>
+    </p>
+
+    <p>
+      <?php echo $html->submit('Search') ?>    -->
+<?php
+   $html->addCrumb('view records','/bibs/index');
+   $pagination->setPaging($paging);
+   //echo ($filter->setFiltering($filters));
+ ?>
+   <hr/><br/>
+    <?php echo $html->link('Remove duplicates','/bibs/dedupselect'); ?>
+<br/><br><hr/><br/>
+
+
+<!--?php if (!$search_box): ?-->
+<?php
+                echo $html->formTag('/bibs/indexnew/' . $html->tagValue('Bib/id'));
+                echo "<table>";
+                echo "<tr><td>Title:</td><td>";
+                echo "<input type=\"text\" name=\"data[Bib][title]\"   id=\"data[Bib][title]\" value=\"\" />";
+                echo "</td>";
+                echo "<td><select name=\"data[Bib][titleop]\" > <option value=\"1\">Exact</option> <option value=\"2\" selected>Contains</option></select></td>";                
+                echo "<td><select name=\"data[Bib][bool1]\" > <option value=\"1\">AND</option> <option value=\"2\">OR</option> </select></td>";
+                echo "</tr><tr><td>Abbrev title:</td><td>";
+                echo "<input type=\"text\" name=\"data[Bib][abbrev_title]\"   id=\"data[Bib][abbrev_title]\" value=\"\" />";                
+                echo "</td>";
+                echo "<td><select name=\"data[Bib][abbrevop]\" > <option value=\"1\">Exact</option> <option value=\"2\" selected>Contains</option></select></td>";                
+                echo "<td><select name=\"data[Bib][bool2]\" > <option value=\"1\">AND</option> <option value=\"2\">OR</option> </select></td>";                
+                echo "</tr><tr><td>Id:</td><td>";
+                echo "<input type=\"text\" name=\"data[Bib][id]\"   id=\"data[Bib][id]\" value=\"\" />";                
+                echo "</td>";
+                echo "<td><select name=\"data[Bib][idop]\" > <option value=\"1\" selected>=</option> <option value=\"2\">Greater than</option><option value=\"3\">Less than</option></select></td>";                
+                echo "<td><select name=\"data[Bib][bool3]\" > <option value=\"1\">AND</option> <option value=\"2\">OR</option> </select></td>";                                
+                echo "</tr><tr><td>Subject:</td><td>";
+                echo "<input type=\"text\" name=\"data[Bib][subject]\"   id=\"data[Bib][subject]\" value=\"\" />";                
+                echo "</td>";
+                echo "<td><select name=\"data[Bib][subjectop]\" > <option value=\"1\">Exact</option> <option value=\"2\" selected>Contains</option></select></td>";                                 
+                echo "<td><select name=\"data[Bib][bool4]\" > <option value=\"1\">AND</option> <option value=\"2\">OR</option> </select></td>";
+                echo "</tr><tr><td>Place:</td><td>";
+                echo "<input type=\"text\" name=\"data[Bib][place]\"   id=\"data[Bib][place]\" value=\"\" />";   
+                echo "</td>";                
+                echo "<td><select name=\"data[Bib][placeop]\" > <option value=\"1\">Exact</option> <option value=\"2\" selected>Contains</option></select></td>";                                 
+		echo "<td><select name=\"data[Bib][bool5]\" > <option value=\"1\">AND</option> <option value=\"2\">OR</option> </select></td>";
+                echo "</tr><tr><td>&nbsp;";
+                echo "</td><td>Sort by: <select name=\"data[Bib][sortorder]\" > <option value=\"1\" selected>title</option> <option value=\"2\">Publisher</option> <option value=\"3\" selected>ID</option> <option value=\"4\">Abbrev title</option><option value=\"5\">Subject</option></select></td><td>&nbsp;</td><td>&nbsp;</td></tr><tr><td>&nbsp;</td><td>";       
+                echo "<input type=\"hidden\" name=\"search_box\"   value=\"1\" />";
+                echo	$html->submit('Search ');
+                
+       
+                echo "</form>";
+       
+                echo "</table />";
+?>
+<!--?php endif; ?--> 
+
+
+<!--?php if (!$search_box): ?-->
+
+<table>
+<tr>
+    <th><?php echo $pagination->sortLink('rec_key', 'ID', 1); ?></th>
+    <th><?php echo $pagination->sortLink('title', 'Title'); ?></th>
+    <th><?php echo $pagination->sortLink('pub', 'Publisher'); ?></th>
+    <th><?php echo $pagination->sortLink('abbrev_title', 'Abbrev'); ?></th>
+    <th><?php echo $pagination->sortLink('matches', 'Matches'); ?></th>
+    <th>Actions</th>
+    <th>Bid to scan</th>
+
+</tr>
+
+<!--?php var_dump($Bibs);?-->
+
+
+<?php foreach ($Bibs as $row): ?>
+
+<tr>
+    <td><a id="row<?php echo $row['id'] ?>"></a><?php echo $row['id'] ?></td>
+    <td><?php echo $row['title'] ?></td>
+    <td><?php echo $row['pub'] ?></td>
+    <td><?php echo $row['abbrev_title'] ?></td>
+
+   <td>   
+   
+         <?php          
+		 $holdings = $row['Holding'];
+		 foreach ($holdings as $holding)
+		 {
+		    //echo $holding['place'];
+		    echo $matchlinker->generate_opac_links($holding['place'], $holding['035'], $holding['oclc'], $row['Bib']['001']);
+		    echo "<br>";
+		 }                  
+         ?>
+        
+   </td>
+      
+
+
+    <td>
+        <?php echo $html->link('View record and bids','/Bibs/view/' . $row['Bib']['id']); ?><br/>
+        <?php //echo $html->link('Edit','/Bibs/edit/' . $row['Bib']['id']); ?>
+     </td>
+     <td>
+ <?php
+        
+            if ($bidbutton->draw_buttons($row) == 'none')
+                {
+                if ($othAuth->sessionValid())
+                {                    echo $html->formTag('/bids/bidall/' . $html->tagValue('Bid/id'));
+                    echo "<input type=\"hidden\" name=\"data[Bid][partial]\" id=\"data[Bid][partial]\" value=\"0\" />";
+                    echo "<input type=\"hidden\" name=\"data[Bid][bib_id]\"  id=\"data[Bid][bib_id]\" value=\"";
+                    echo $row['Bib']['id'] . "\" />";
+                    echo "<input type=\"hidden\" name=\"data[Bid][user_id]\" id=\"data[Bid][user_id]\" value=\"";
+                    echo $othAuth->user('id'). '" />';
+           
+                    echo "<input type=\"hidden\" name=\"data[Bid][status_id]\" id=\"data[Bid][status_id]\" value=\"1\" />";
+                    echo	$html->submit('Bid for all ');
+           
+                    echo "</form>";
+           
+                    echo $html->formTag('/bids/bidpartial/' . $html->tagValue('Bid/id'));
+                    echo "<input type=\"hidden\" name=\"data[Bid][bib_id]\"   id=\"data[Bid][bib_id]\" value=\"";
+                    echo $row['Bib']['id'] . "\" />";
+                    echo "<input type=\"hidden\" name=\"data[Bid][Bib][title]\" id=\"data[Bid][Bib][title]\" value=\"";
+                    echo $row['Bib']['title'] . "\" />" . $html->submit('Partial bid') . "</form>" ;
+                }
+                else
+                {
+               echo "<p><b>Please " . $html->link('login','/users/login') . " to bid</b></p>"; 
+                }  
+                }
+                else
+                {                echo $bidbutton->draw_buttons($row);                }
+           
+ 
+            
+ ?>
+
+    </td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+
+
+<br />
+<br />
+ <p>Select a page:</p>
+<?php echo $pagination->pageNumbers(NULL, NULL, ' '); ?>
+
+<!--?php endif; ?--> 
+</table>
+</table>

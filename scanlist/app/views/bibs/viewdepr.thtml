@@ -1,0 +1,115 @@
+<?php
+$id = $bib['Bib']['id'];
+$html->addCrumb('view records','/bibs/index');
+$html->addCrumb('view record',"/bibs/viewdepr/$id"); 
+
+$bids = $bib['Bid'];
+$holdings = $bib['Holding'];
+
+?>
+
+<h1><?php echo $bib['Bib']['title']?></h1>
+
+<small><font color="red">FORMER RECORD NOW MERGED</font></small>
+
+<p><small>Title: <?php echo $bib['Bib']['title']?></small></p>
+
+<p><small>Abbreviation: <?php echo $bib['Bib']['abbrev_title']?></small></p>
+
+<p><small>Author: <?php echo $bib['Bib']['author']?></small></p>
+
+<p><small>001: <?php echo $bib['Bib']['001']?></small></p>
+
+<p><small>002: <?php echo $bib['Bib']['002']?></small></p>
+
+<p><small>008: <?php echo $bib['Bib']['008']?></small></p>
+
+<p><small>ISSN: <?php echo $bib['Bib']['022']?></small></p>
+
+<p><small>Subjects: <?php echo $bib['Bib']['subjects']?></small></p>
+
+<p><small>Publisher: <?php echo $bib['Bib']['pub']?></small></p>
+
+<p><small>Basis of match (if any): <?php echo $bib['Bib']['match_basis']?></small></p>
+
+<p><small>Merged records (if any): 
+
+   <?php foreach ($oldrecordsmerged as $oldrecordmerged): ?>
+      
+   <?php  
+   //echo $oldrecordmerged['Bib']['new_id'] . " "; 
+   
+    echo  $html->link($oldrecordmerged['Bib']['id'], '/bibs/viewdepr/' . $oldrecordmerged['Bib']['id'], array('target' => '_blank') );
+    echo " ";
+
+   ?>
+   
+   <?php endforeach; ?>
+   
+   </small>
+</p>
+
+
+
+<!-- BS remmed out for now -->
+<!-- <p><small>Matches: <?php echo $matchlinker->generate_opac_links($bib['Bib']['matches'])?></small></p> -->
+
+
+<!--p><?php echo $html->link('Edit this record','/bibs/edit/'.$bib['Bib']['id']) ?></p-->
+
+<hr/>
+<h2>Holdings information</h2>
+<table>
+<tr>
+    <th>Owner</th>
+    <th>BHL location</th>
+    <th>Local ctrl</th>
+    <th>Holdings</th>
+    <th>Subject</th>    
+    <th>e-access?</th>
+    <th>Match basis</th>
+    <th>OCLC</th>
+    <!--th>Actions</th-->
+    </tr>
+<?php
+// Bump all the following to controller....???
+foreach ($holdings as $holding):
+// var_dump($holding);
+$user = $holding['User'];
+
+
+//var_dump($status);
+?>
+  <tr>
+      <td><?php if(!$user['username']) echo '&nbsp;'; else echo $user['username'];?></td>
+      <td><?php if(!$holding['place']) echo '&nbsp;'; else echo $holding['place'];?></td>
+      <td><?php if(!$holding['035']) echo '&nbsp;'; else echo $holding['035'];?></td>
+      <td><?php if(!$holding['hol_1'] && !$holding['hol_2'] && !$holding['hol_3' && !$holding['hol_4']]) echo '&nbsp;'; else echo $holding['hol_1'] . '</br>' .  $holding['hol_2'] . '</br>' . $holding['hol_3'] . '</br>' . $holding['hol_4'] ;?></td>
+      <td><?php if(!$holding['subject']) echo '&nbsp;'; else echo $holding['subject'];?></td>
+      <td><?php if(!$holding['e_856']) echo '&nbsp;'; else echo $holding['e_856']; ?></td>
+      <td><?php if(!$holding['match_basis']) echo '&nbsp;'; else echo $holding['match_basis'];?></td>
+      <td><?php if(!$holding['oclc']) echo '&nbsp;'; else echo $holding['oclc'];?></td>
+      <!--td>
+       <?php // Logic to determine if logged in users can see buttons for editing their records...
+          if ($othAuth and $user['id']== $othAuth->user('id'))
+          {
+          echo $html->link('Edit bid','/holdings/edit/'.$holding['id']) . "<br/>";
+          echo $html->link('Delete bid','/holdings/delete/'.$holding['id']);
+          }
+          else
+          {
+          $nobuttons = 1;
+          echo "You are not authorised to delete or edit these holdings.";
+          }
+          ?>
+        </td-->
+  </tr>
+ <?php endforeach; ?>
+</table>
+
+
+
+
+<hr/>
+
+

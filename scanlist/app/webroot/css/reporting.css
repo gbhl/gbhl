@@ -1,0 +1,177 @@
+/*	
+REPORTING CSS FUNCTIONS
+------------------------------------------------------
+*/
+
+.report_form {
+	margin: 2px;
+	width: 950px;
+}
+
+#report_form fieldset
+{
+	width: 100%;
+	border: 1px solid #CCCCCC;
+}
+
+#report_form legend
+{
+	padding: 5px;
+	border: 1px solid #CCCCCC;
+	letter-spacing: 2px;
+	font: normal normal bold 13pt arial; 
+	color: #FFFFFF;
+} 
+
+#report_form .report_small
+{
+	margin: 10px;
+	height: 60px;
+	border-collapse: collapse;
+	vertical-align: center;
+	font: normal normal bold 9pt arial; 
+	color: #333333;	
+}
+
+#report_form .report
+{	
+	width: 950px;
+	margin: 10px;
+	border-top-width: 0px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-right-width: 1px;
+	border-style: solid;
+	border-color: #CCCCCC;
+	border-collapse: collapse;
+	font: normal normal bold 11pt arial; 
+	color: #FFFFFF;
+}
+
+#report_form .report tr.header td
+{
+	width: 190px;
+	padding: 4px;
+	background: #333333;	
+	border-top-width: 0px;
+	border-bottom-width: 1px;
+	border-left-width: 0px;
+	border-right-width: 0px;
+	border-style: solid;
+	border-color: #CCCCCC;
+
+}
+
+
+#report_form .report tr.body td
+{
+	width: 190px;
+	padding: 4px;
+	background: #FFFFFF;	
+	border-top-width: 0px;
+	border-bottom-width: 1px;
+	border-left-width: 0px;
+	border-right-width: 0px;
+	border-style: solid;
+	border-color: #CCCCCC;
+	text-align: left;
+	font: normal normal bold 10pt arial; 
+	color: #333333;
+}
+
+#report_form .report tr.body_selected td
+{
+	width: 190px;
+	padding: 4px;
+	background: #EFD3D3;	
+	border-top-width: 0px;
+	border-bottom-width: 1px;
+	border-left-width: 0px;
+	border-right-width: 0px;
+	border-style: solid;
+	border-color: #CCCCCC;
+	text-align: left;
+	font: normal normal bold 10pt arial; 
+	color: #333333;
+}
+
+#report_form .report tr.body input
+{
+	padding: 2px;
+	background: #CCCCCC;
+	border: 1px solid #CCCCCC;
+	font: normal normal bold 10pt arial; 
+	color: #0066CC;
+}
+
+#report_form .report tr.body_selected input
+{
+	padding: 2px;
+	background: #CCCCCC;
+	border: 1px solid #999999;
+	font: normal normal bold 10pt arial; 
+	color: #0066CC;
+}
+
+.report_name {
+	font: normal normal bold 19pt arial; 
+	color: #333333;
+}
+
+.report_date_stamp {
+	margin-left: 5px;
+	font: normal normal 11pt arial; 
+	color: #333333;
+}
+
+.#report_display {
+	margin: 2px;
+	padding: 0px;
+	width: 950px;
+}
+
+#report_display .report
+{
+	margin: 0px;
+	padding: 0px;
+	border-top-width: 0px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-right-width: 1px;
+	border-style: solid;
+	border-color: #CCCCCC;
+	border-collapse: collapse;
+	font: normal normal bold 11pt arial; 
+	color: #FFFFFF;
+}
+
+#report_display .report tr.header td
+{
+	padding: 4px 25px 4px 4px;
+	background: #333333;
+	border-top-width: 0px;
+	border-bottom-width: 1px;
+	border-left-width: 0px;
+	border-right-width: 0px;
+	border-style: solid;
+	border-color: #EEEEEE;
+	font: normal normal bold 10pt arial; 
+	color: #FFFFFF;
+	text-align: left;
+}
+
+
+#report_display .report tr.body td
+{
+	padding: 4px 25px 4px 4px;
+	background: #FFFFFF;
+	border-top-width: 0px;
+	border-bottom-width: 1px;
+	border-left-width: 0px;
+	border-right-width: 0px;
+	border-style: solid;
+	border-color: #CCCCCC;
+	text-align: left;
+	font: normal normal bold 9pt arial; 
+	color: #555555;
+}

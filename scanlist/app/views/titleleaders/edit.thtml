@@ -1,0 +1,89 @@
+<?php
+$id = $mytitleleader['Titleleader']['id'];
+$html->addCrumb('view records','/titleleaders/index');
+$html->addCrumb('view record',"/titleleaders/view/$id"); 
+
+
+$mytitleleaders = $mytitleleader['Titleleader'];
+$holdings = $mytitleleader['Bhlmetadata'];
+
+
+?>
+
+<h1>Edit <?php echo $mytitleleader['Titleleader']['title_short']?> holding summary</h1>
+
+<form method="post" action="<?php echo $html->url('/titleleaders/edit')?>">
+<?php echo $html->hidden('Titleleader/id'); ?>
+<?php echo $html->hidden('Titleleader/manualattnflag', array('value' => '1')); ?>
+
+<p><small>Title: <?php if(!$mytitleleader['Titleleader']['title_short']) echo '&nbsp;'; else echo str_replace('@@@a','',$mytitleleader['Titleleader']['title_short']); ?></p>
+
+
+<p><small>No. items: <?php echo $mytitleleader['Titleleader']['itemcount']?></small></p>
+
+<p><small>Holdings (autogen): <?php echo $mytitleleader['Titleleader']['summary_holding_autom']?></small></p>
+
+<p><small>Contributor: <?php echo $mytitleleader['Titleleader']['contributor']?></small></p>
+
+<p><small><b>From vol:</b> <?php echo $mytitleleader['Titleleader']['lowest_vol']?>&nbsp;<b>to vol:</b> <?php echo $mytitleleader['Titleleader']['highest_vol']?>&nbsp;<b>From:</b> <?php echo $mytitleleader['Titleleader']['lowest_year']?>&nbsp;<b>to:</b> <?php echo $mytitleleader['Titleleader']['highest_year']?>&nbsp;</small></p>
+
+
+    <p>
+    <b>Manual holding statement: </b>
+    <?php echo $html->input('Titleleader/man_summ_holdings', array('size' => '60'))?>     
+    </p>
+
+
+
+    <?php echo $html->submit('Update holding statement') ?>
+</form>
+
+<hr>
+
+         <?php 
+         if($mytitleleader['Titleleader']['titleident'])
+         {
+           $formedurl = $mytitleleader['Titleleader']['titleident'];
+            echo $html->link('bhlwww title','http://www.biodiversitylibrary.org/bibliography/' . $formedurl	, array('target' => '_blank')); 
+         }
+         
+         ?>
+
+<h2>Vols</h2>
+<table>
+<tr>
+    <th>#</th>
+    <th>Identifier</th>
+    <th>From vol</th>
+    <th>To vol</th>
+    <th>From</th>
+    <th>To</th>    
+    <th>Contributor</th>
+    <th>Actions</th>
+    </tr>
+<?php
+
+foreach ($holdings as $holding):
+
+?>
+  <tr>
+      <td><?php if(!$holding['id']) echo '&nbsp;'; else echo $holding['id'];?></td>
+      <td><?php if(!$holding['identifier']) echo '&nbsp;'; else echo $holding['identifier'];?></td>
+      <td><?php if(!$holding['fromvol']) echo '&nbsp;'; else echo $holding['fromvol'];?></td>
+      <td><?php if(!$holding['tovol']) echo '&nbsp;'; else echo $holding['tovol'];?></td>
+      <td><?php if(!$holding['fromyear']) echo '&nbsp;'; else echo $holding['fromyear'];?></td>
+      <td><?php if(!$holding['toyear']) echo '&nbsp;'; else echo $holding['toyear'];?></td>
+      <td><?php if(!$holding['contributor']) echo '&nbsp;'; else echo $holding['contributor'];?></td>
+      <td>
+       <?php // Actions ...
+          echo $html->link('BHLwww','http://www.biodiversitylibrary.org/item/' . $holding['identifier'], array('target' => '_blank')); 
+       ?>
+        </td>
+  </tr>
+ <?php endforeach; ?>
+</table>
+
+
+
+
+

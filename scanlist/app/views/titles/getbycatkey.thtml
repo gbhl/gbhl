@@ -1,0 +1,181 @@
+
+<?php
+
+
+
+$id = $mytitle['Title']['id'];
+$html->addCrumb('Control Panel','/pages/control');
+$html->addCrumb('View record',"/titles/view/$id"); 
+
+
+$bids = $mytitle['Bid'];
+$holdings = $mytitle['Holding'];
+?>
+
+<h1><?php echo $mytitle['Title']['title']?></h1>
+
+<p><small>Catkey: <?php echo $mytitle['Title']['catkey']?></small></p>
+
+<p><small>Title control: <?php echo $mytitle['Title']['title_control']?></small></p>
+
+<p><small>Title: <?php echo $mytitle['Title']['title']?></small></p>
+
+<p><small>pressmark: <?php echo $mytitle['Title']['pressmark']?></small></p>
+
+<p><small>Highest Copyright Band: <?php echo $Highestcopyrights[$mytitle['Title']['highest_copyright_band']]; ?></small></p>
+
+<p><small>Is any part of the title scannable?: <?php echo $Any_scannable_statuses[$mytitle['Title']['any_scannable_status']]?></small></p>
+
+<p><small>Reason for non-scannableness: <?php echo $mytitle['Title']['not_scannable_reason']?></small></p>
+
+<p><small>Record created by user: <?php echo $othAuth->user('username')?> </small></p>
+
+<!-- BS remmed out for now -->
+<!-- <p><small>Matches: <?php echo $matchlinker->generate_opac_links($mytitle['Title']['matches'])?></small></p> -->
+
+
+<!--p><?php echo $html->link('Edit this record','/titles/edit/'.$mytitle['Title']['id']) ?></p-->
+
+<hr/>
+<h2>Holdings information</h2>
+<table>
+<tr>
+    <th>Owner</th>
+    <th>BHL location</th>
+    <th>Local ctrl</th>
+    <th>Holdings</th>
+    <th>Subject</th>    
+    <th>e-access?</th>
+    <th>Match basis</th>
+    <th>OCLC</th>
+    <!--th>Actions</th-->
+    </tr>
+<?php
+// Bump all the following to controller....???
+foreach ($holdings as $holding):
+// var_dump($holding);
+$user = $holding['User'];
+
+
+//var_dump($status);
+?>
+  <tr>
+      <td><?php if(!$user['username']) echo '&nbsp;'; else echo $user['username'];?></td>
+      <td><?php if(!$holding['place']) echo '&nbsp;'; else echo $holding['place'];?></td>
+      <td><?php if(!$holding['035']) echo '&nbsp;'; else echo $holding['035'];?></td>
+      <td><?php if(!$holding['hol_1'] && !$holding['hol_2'] && !$holding['hol_3' && !$holding['hol_4']]) echo '&nbsp;'; else echo $holding['hol_1'] . '</br>' .  $holding['hol_2'] . '</br>' . $holding['hol_3'] . '</br>' . $holding['hol_4'] ;?></td>
+      <td><?php if(!$holding['subject']) echo '&nbsp;'; else echo $holding['subject'];?></td>
+      <td><?php if(!$holding['e_856']) echo '&nbsp;'; else echo $holding['e_856']; ?></td>
+      <td><?php if(!$holding['match_basis']) echo '&nbsp;'; else echo $holding['match_basis'];?></td>
+      <td><?php if(!$holding['oclc']) echo '&nbsp;'; else echo $holding['oclc'];?></td>
+      <!--td>
+       <?php // Logic to determine if logged in users can see buttons for editing their records...
+          if ($othAuth and $user['id']== $othAuth->user('id'))
+          {
+          echo $html->link('Edit bid','/holdings/edit/'.$holding['id']) . "<br/>";
+          echo $html->link('Delete bid','/holdings/delete/'.$holding['id']);
+          }
+          else
+          {
+          $nobuttons = 1;
+          echo "You are not authorised to delete or edit these holdings.";
+          }
+          ?>
+        </td-->
+  </tr>
+ <?php endforeach; ?>
+</table>
+
+
+
+
+<hr/>
+<h2>Bid information</h2>
+
+<?php // This should really really really be in a helper, but I cannot figure out how to pull in data from other helpers (i.e. the HTML and oauth helpers) into a helper, or even if I should... oh well...poor repeititive code it is...
+ if ($bidbutton->draw_buttons_full($row) == 'none')
+                {
+                if ($othAuth->sessionValid())
+                {    
+            echo $html->formTag('/bids/bidall/' . $html->tagValue('Bid/id'));
+                echo "<input type=\"hidden\" name=\"data[Bid][partial]\"   id=\"data[Bid][partial]\" value=\"0\" />";
+                echo "<input type=\"hidden\" name=\"data[Bid][title_id]\"  id=\"data[Bid][title_id]\" value=\"";
+                echo $mytitle['Title']['id'] . "\" />";
+                echo "<input type=\"hidden\" name=\"data[Bid][user_id]\"   id=\"data[Bid][user_id]\" value=\"";
+                echo $othAuth->user('id'). '" />';
+       
+                echo "<input type=\"hidden\" name=\"data[Bid][status_id]\" id=\"data[Bid][status_id]\" value=\"1\" />";
+                echo	$html->submit('Bid for all ');
+       
+                echo "</form>";
+       
+                echo $html->formTag('/bids/bidpartial/' . $html->tagValue('Bid/id'));
+                echo "<input type=\"hidden\" name=\"data[Bid][title_id]\"   id=\"data[Bid][title_id]\" value=\"";
+                echo $mytitle['Title']['id'] . "\" />";
+                echo "<input type=\"hidden\" name=\"data[Bid][Title][title]\" id=\"data[Bid][Title][title]\" value=\"";
+                echo $mytitle['Title']['title'] . "\" />" . $html->submit('Partial bid') . "</form>" ;
+            }
+            elseif ($bidbutton->draw_buttons_full($mytitle) == '<b>Partial bid in place</b>')
+            {            echo "<b>Add another partial bid</b>";            echo $html->formTag('/bids/bidpartial/' . $html->tagValue('Bid/id'));
+                echo "<input type=\"hidden\" name=\"data[Bid][title_id]\"   id=\"data[Bid][title_id]\" value=\"";
+                echo $mytitle['Title']['id'] . "\" />";
+                echo "<input type=\"hidden\" name=\"data[Bid][Title][title]\" id=\"data[Bid][Title][title]\" value=\"";
+                echo $mytitle['Title']['title'] . "\" />" . $html->submit('Partial bid') . "</form>" ;
+                }
+                else
+                {
+                 echo "<p><b>Please " . $html->link('login','/users/login') . " to bid</b></p>";    
+                }  
+                }
+                else
+                {
+                echo $bidbutton->draw_buttons($row);
+                }
+  
+
+ ?>
+
+<table>
+<tr>
+    <th>Bidder</th>
+    <th>Bid type</th>
+    <th>Bid start</th>
+    <th>Bid end</th>
+    <th>Bid status</th>
+    <th>Notes</th>
+    <th>Actions</th>
+    </tr>
+<?php
+// Bump all the following to controller....???
+foreach ($bids as $bid):
+// var_dump($bid);
+$user = $bid['User'];
+$status = $bid['Status'];
+
+//var_dump($status);
+?>
+  <tr>
+      <td><?php echo $user['username']?></td>
+      <td><?php if ($bid['partial']) {echo 'Partial bid'; } else {echo 'Complete bid'; }  ?></td>
+      <td><?php if(!$bid['startdate']) echo '&nbsp;'; else echo $bid['startdate']; ?></td>
+      <td><?php if(!$bid['enddate']) echo '&nbsp;'; else echo $bid['enddate']; ?></td>
+      <td><?php echo $status['status']?></td>
+      <td><?php if(!$bid['notes']) echo '&nbsp;'; else echo $bid['notes']; ?></td>
+      <td>
+          <?php // Logic to determine if logged in users can see buttons for editing their records...
+          if ($othAuth and $user['id']== $othAuth->user('id'))
+          {          if($bid['partial'] ==1)
+            {
+            echo $html->link('Edit bid','/bids/edit/'.$bid['id']) . "<br/>";
+            }                      echo $html->link('Delete bid','/bids/delete/'.$bid['id']);
+          }
+          else
+          {          echo "You are not authorised to delete or edit this bid, please contact the bid owner";
+          }
+          ?>
+      </td>
+
+  </tr>
+ <?php endforeach; ?>
+</table>
+

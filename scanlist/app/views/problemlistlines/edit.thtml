@@ -1,0 +1,56 @@
+<?php
+$id = $myproblemlistline['Problemlistline']['id'];
+$pkid = $myproblemlistline['Problemlistline']['problemlist_id'];
+
+$html->addCrumb('view lists','/problemlists/index');
+$html->addCrumb('edit Problem list',"/problemlists/edit/$pkid"); 
+//var_dump($myproblemlistlinelines);
+
+?>
+
+<h1>Edit Problem list line <?php echo $myproblemlistline['Problemlistline']['id'] ?></h1>
+<form method="post" action="<?php echo $html->url('/problemlistlines/edit')?>">
+ <?php echo $html->hidden('Problemlistline/id'); ?>
+    <?php echo $html->hidden('Problemlistline/user_id'); ?>
+      <?php echo $html->hidden('Problemlistline/problemlist_id'); ?>
+
+    <p>
+    <b>Problem list: <?php echo $myproblemlistline['Problemlistline']['id'] ?></b> - Line <?php echo $myproblemlistline['Problemlistline']['linenumber'] ?>
+
+
+    </p>
+    
+    <p>Title: <?php echo $myproblemlistline['Title']['title'] ?>
+    </p>
+     
+    <p>
+       <b>Description of holdings affected: </b>
+    </p>
+    <p>
+    
+    <?php echo $html->textarea('Problemlistline/description', array('rows' => '10', 'cols' => '60'))?>
+    </p>
+
+    <p>
+    <b>Problem status 1: </b>
+    <?php  echo  $html->selectTag('Problemlistline/problem_status', $Problemstatuses, NULL ,array(),NULL,0);?>                        
+    </p>
+
+    <p>
+    <b>Problem status 2: </b>
+    <?php  echo  $html->selectTag('Problemlistline/problem_status1', $Problemstatuses, NULL ,array(),NULL,0);?>                        
+    </p>
+
+    <p>
+    <b>Problem status 3: </b>
+    <?php  echo  $html->selectTag('Problemlistline/problem_status2', $Problemstatuses, NULL ,array(),NULL,0);?>                        
+    </p>
+
+
+<p>
+    <?php echo $html->submit('[U]pdate line', array('accesskey' => 'u')) ?>
+</p>    
+</form>
+
+
+<hr />

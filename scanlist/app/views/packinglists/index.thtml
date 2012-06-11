@@ -1,0 +1,95 @@
+<h1>View packing list</h1>
+<form method="post" action="<?php echo $html->url('/packinglists')?>">
+    <p>
+         <!--  Title:
+        <?php echo $html->input('Bib/title', array('size' => '40'))?>
+        <?php echo $html->tagErrorMsg('Bib/title', 'Search term required') ?>
+    </p>
+
+    <p>
+      <?php echo $html->submit('Search') ?>    -->
+      
+<table>
+<tr>
+<td>
+<?php
+   $html->addCrumb('view records','/packinglists/index');
+   $pagination->setPaging($paging);
+   echo $html->link('tips','/pages/help#h11', array('target'=>'_blank'));
+   echo ($filter->setFiltering($filters));
+   ?>
+   <!-- BS later -->
+    <?php 
+    
+    if ($othAuth->sessionValid() && $othAuth->group('level') <= 200) 
+    {
+    
+                            echo $html->formTag('/packinglists/add/' . $html->tagValue('Packinglist/id'));
+    			    echo "<input type=\"hidden\" name=\"data[Packinglist][create_date]\"   id=\"data[Packinglist][create_date]\" value=\"";
+    			    echo date("Ymd") . "\" />";
+    			    echo "<input type=\"hidden\" name=\"data[Packinglist][library]\"   id=\"data[Packinglist][library]\" value=\"";
+    			    echo $othAuth->user('library') . "\" />";    			     			   
+                            echo $html->submit('[A]dd', array('accesskey' => 'a')) . "</form>" ;
+                            
+    }
+    
+    ?>
+</td>
+</tr>
+</table>
+
+
+
+
+<?php echo $pagination->prevPage('<<'); echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $pagination->nextPage('>>');?>
+
+<?php echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'; echo "Records found: " .  $pagination->_pageDetails['recordCount']; ?>
+
+<?php echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'; echo "Current page: " .  $pagination->_pageDetails['page']; ?>
+
+<table id="results">
+<tr>
+    <th><?php echo $pagination->sortLink('id', '#', 1); ?></th>
+    <th><?php echo $pagination->sortLink('create_date', 'Date Created'); ?></th>
+    <th><?php echo $pagination->sortLink('packing_list_status', 'Status'); ?></th>
+    <th>Actions</th>
+    <th>Any lines?</th>
+
+</tr>
+
+<!--?php var_dump($Packinglists);?-->
+
+<?php foreach ($Packinglists as $row): ?>
+
+<tr>
+    <td><a id="row<?php echo $row['Packinglist']['id'] ?>"></a><?php echo $row['Packinglist']['id'] ?></td>
+    <td><?php if(!$row['Packinglist']['create_date']) echo '&nbsp;'; else echo $row['Packinglist']['create_date']; ?></td>
+    
+    
+    <td><?php if(!$Packingliststatuses[$row['Packinglist']['packing_list_status']]) echo '&nbsp;'; else echo $Packingliststatuses[$row['Packinglist']['packing_list_status']]; ?></td>
+
+
+      
+
+
+    <td>
+        <?php echo $html->link('view','/Packinglists/view/' . $row['Packinglist']['id']); ?>
+        <?php echo $html->link('edit','/Packinglists/edit/' . $row['Packinglist']['id']); ?><br />
+        <?php echo $html->link('delete','/Packinglists/delete/' . $row['Packinglist']['id']); ?>
+     </td>
+     
+    <td>
+        <?php if(!$row['Packinglistline']) echo 'NO'; else echo 'YES'; ?>
+    </td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+<br />
+<br />
+ <p>Select a page:</p>
+<?php echo $pagination->pageNumbers(NULL, NULL, ' '); ?>
+
+
+</table>
+

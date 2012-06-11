@@ -1,0 +1,133 @@
+
+<?php
+$id = $myapukkatitle['Title']['id'];
+$html->addCrumb('view records','/problemlists/index');
+$html->addCrumb('view record',"/problemlists/view/$id"); 
+
+$myapukkatitles = $myapukkatitle['Title'];
+
+?>
+
+<hr />
+<p>Is the correct title displayed?</p>
+<input type=submit value="[N]o" onClick="history.go(-1)", accesskey='n' >
+
+
+<!-- this bit displays the first part of the html page if it is only *one* record that has been found -->
+<?php if ($thenumberoftitles > 1) echo "<!-- </br>"; ?>
+
+<form method="post" action="<?php echo $html->url('/problemlistlines/add')?>">
+
+
+
+<?php echo $html->hidden('Problemlist/id', array('value' => $theproblemlistidvalue))?>       
+
+<input type=submit value="[Y]es" accesskey='y' >
+
+
+
+
+
+<h1><?php echo $myapukkatitle['Title']['title']?></h1>
+
+<?php echo $html->hidden('Title/title', array('value' => $myapukkatitle['Title']['title']) ); ?>
+
+<p><small>Catkey: <?php echo $myapukkatitle['Title']['catkey']?></small></p>
+
+<?php echo $html->hidden('Title/catkey', array('value' => $myapukkatitle['Title']['catkey']) ); ?>
+<?php echo $html->hidden('Title/id', array('value' => $myapukkatitle['Title']['id']) ); ?>
+
+<p><small>Title control: <?php echo $myapukkatitle['Title']['title_control']?></small></p>
+
+<p><small>Title: <?php echo $myapukkatitle['Title']['title']?></small></p>
+
+<p><small>Pressmark: <?php echo $myapukkatitle['Title']['pressmark']?></small></p>
+
+<?php echo $html->hidden('Title/pressmark', array('value' => $myapukkatitle['Title']['pressmark']) ); ?>
+
+<p><small>Latest Copyright Band: <?php echo $Highestcopyrights[$myapukkatitle['Title']['highest_copyright_band']]; ?></small></p>
+
+<p><small>Is any part of the title scannable?: <?php echo $Any_scannable_statuses[$myapukkatitle['Title']['any_scannable_status']]?></small></p>
+
+<p><small>Reason it can't be scanned: <?php echo $myapukkatitle['Title']['not_scannable_reason']?></small></p>
+
+<p><small>Record was created by user: <?php echo $othAuth->user('username')?> </small></p>
+
+</form>
+
+<?php if ($thenumberoftitles > 1)  echo "-->"; ?>
+
+
+<!-- this bit displays the second part of the html page if it is *many* records that have been found -->
+
+<?php if ($thenumberoftitles == 1)  echo "<!--  </br>"; ?>
+
+
+
+<table id="results">
+<tr>
+    <th>Title</th>
+    <th>Pressmark</th>
+    <th>&copy; band</th>
+    <th>Any scannable?</th>
+    <th></th>
+
+</tr>
+
+
+
+<?php 
+
+foreach ($myapukkatitle as $row):
+
+echo "<form method='post' action='";
+echo $html->url('/problemlistlines/add');
+echo "'>";
+
+
+
+// render rest with php so it works in IE browsers!
+echo "<tr>";
+echo "<td>";
+        echo $row['Title']['title'];
+        
+        echo $html->hidden('Problemlist/id', array('value' => $theproblemlistidvalue));
+	echo $html->hidden('Title/title', array('value' => $row['Title']['title']) ); 
+	echo $html->hidden('Title/catkey', array('value' => $row['Title']['catkey']) ); 
+	echo $html->hidden('Title/id', array('value' => $row['Title']['id']) ); 
+        echo $html->hidden('Title/pressmark', array('value' => $row['Title']['pressmark']) );
+        
+echo "</td>";
+     
+    echo "<td>"; if(!$row['Title']['pressmark']) echo '&nbsp;'; else echo $row['Title']['pressmark']; echo "</td>";
+    
+    
+    echo "<td>"; if(!$Highestcopyrights[$row['Title']['highest_copyright_band']]) echo '&nbsp;'; else echo $Highestcopyrights[$row['Title']['highest_copyright_band']]; echo "</td>";
+      
+    echo "<td>";  if(!$Any_scannable_statuses[$row['Title']['any_scannable_status']]) echo '&nbsp;'; else echo $Any_scannable_statuses[$row['Title']['any_scannable_status']]; echo "</td>";
+
+    echo "<td>";
+        echo $html->link('view','/Titles/view/' . $row['Title']['id']); echo "<br />";
+        echo "<input type=submit value='[Y]es' accesskey='y' >";
+        
+    echo "</td>";
+echo "</tr>";
+
+
+echo "</form>";
+
+endforeach;
+
+echo "</table>";
+
+?>
+
+
+
+
+<?php if ($thenumberoftitles == 1) echo "-->"; ?>
+
+</form>
+
+
+

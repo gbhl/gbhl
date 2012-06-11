@@ -1,0 +1,40 @@
+<?php
+$html->addCrumb('view bids','/bids');
+$html->addCrumb('edit bid','/bids/edit');
+
+     //print_r($bid_so_far['title_id']);
+    // $match_title = $this->data['Bid']['Bib']['title'];
+
+?>
+
+<h1>Edit bid</h1>
+<form method="post" action="<?php echo $html->url('/bids/edit')?>">
+ <?php echo $html->hidden('Bid/id'); ?>
+    <?php echo $html->hidden('Bid/partial'); ?>
+    <?php echo $html->hidden('Bid/bib_id'); ?>
+    <?php echo $html->hidden('Bid/user_id'); ?>
+    <?php echo $html->hidden('Bid/status_id'); ?>
+<?php if($this->data['Bid']['partial'] == '0' ) echo '<!--'; ?>		
+    <p><b>Start date: </b>
+	 <?php echo $html->yearOptionTag('Bid/startdate','',1700,2007,$bid['Bid']['startdate']);?> 		
+    </p>
+     <p><b>End date: </b>
+        <?php echo $html->yearOptionTag('Bid/enddate','',1700,2007,$bid['Bid']['enddate']);?> 	 		
+    </p>
+<?php if($this->data['Bid']['partial'] == '0' ) echo '-->'; ?>	
+     <p>
+    <b>Notes: </b>
+     <?php echo $html->textarea('Bid/notes', array('size' => '40')) ?>
+    </p>
+     <p>
+    <b>Exceptions: </b>
+     <?php echo $html->textarea('Bid/excepts', array('size' => '40')) ?>
+    </p>
+    
+     <p>
+     <b>Status: </b>
+     <?php echo  $html->selectTag('Bid/status_id',$Statuses)?>
+      </p>
+
+    <?php echo $html->submit('Update bid') ?>
+</form>

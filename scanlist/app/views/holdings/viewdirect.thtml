@@ -1,0 +1,111 @@
+
+<?php
+$id = $myholding['Holding']['id'];
+$html->addCrumb('view records','/holdings/index');
+$html->addCrumb('view record',"/holdings/view/$id"); 
+
+//var_dump($myholding);
+$myholdings = $myholding['Holding'];
+?>
+
+<hr />
+<p>Is this the right title?</p>
+<input type=submit value="No" onClick="history.go(-1)">
+
+<form method="post" action="<?php echo $html->url('/titles/addtitle')?>">
+<input type=submit value="Yes" >
+
+
+
+
+<h1><?php echo $myholding['Bib']['title']?></h1>
+
+
+<p><small>Title: <?php if(!$myholding['Bib']['title']) echo '&nbsp;'; else echo str_replace('@@@a','',$myholding['Bib']['title']); ?></small></p>
+
+<?php echo $html->hidden('Bib/title', array('value' => str_replace('@@@a','',$myholding['Bib']['title'])))?>
+
+<p><small>Publisher: <?php if(!$myholding['Bib']['pub']) echo '&nbsp;'; else echo $myholding['Bib']['pub']; ?></small></p>
+
+<?php echo $html->hidden('Bib/pub', array('value' => $myholding['Bib']['pub']))?>
+
+<p><small>Id: <?php echo $myholding['Holding']['id']?></small></p>
+
+<p><small>Control: <?php echo $matchlinker->generate_control($myholding['Holding']['place'], $myholding['Holding']['035'])?></small></p>
+
+<?php echo $html->hidden('Holding/035', array('value' => $matchlinker->generate_control($myholding['Holding']['place'], $myholding['Holding']['035'])))?>
+
+<p><small>Place: <?php echo $myholding['Holding']['place']?></small></p>
+
+<p><small>Holdings 1: <?php echo $myholding['Holding']['hol_1']?></small></p>
+
+<p><small>Holdings 2: <?php echo $myholding['Holding']['hol_2']?></small></p>
+
+<p><small>Holdings 3: <?php echo $myholding['Holding']['hol_3']?></small></p>
+
+<p><small>Holdings 4: <?php echo $myholding['Holding']['hol_4']?></small></p>
+
+<p><small>Subject keywords: <?php echo $myholding['Holding']['subject']?></small></p>
+
+<p><small>856: <?php echo $myholding['Holding']['e_856']?></small></p>
+
+<p><small>OCLC: <?php echo $myholding['Holding']['oclc']?></small></p>
+
+<p><small>Basis of match (if any): <?php echo $myholding['Holding']['match_basis']?></small></p>
+
+</form>
+
+
+<p>************************************</p>
+<p>Bids (if any)</p>
+
+
+<table>
+<tr>
+    <th><?php echo '#'; ?></th>
+    <th><?php echo 'Bidder'; ?></th>
+    <th><?php echo 'Bidtype'; ?></th>
+    <th><?php echo 'From'; ?></th>
+    <th><?php echo 'To'; ?></th>
+    <th><?php echo 'Status'; ?></th>
+    <th><?php echo 'Notes'; ?></th>
+
+</tr>
+
+
+
+<?php foreach ($myholding['Bib']['Bid'] as $row): ?>
+
+
+<tr>
+     <td><?php echo $row['id'] ?></td>   
+     <td><?php 
+     
+              if (substr($othAuth->user('username'),0,3) != 'nhm')
+                  echo "A NON-NHM BID";
+              else 
+                  echo "OUR OWN BID"
+          ?>          
+     </td> 
+     <td><?php if ($row['partial']){ echo 'P';} else {echo 'F';} ?></td>       
+     <td><?php if ($row['startdate']) echo $row['startdate']; else echo '&nbsp;' ?></td>       
+     <td><?php if ($row['enddate']) echo $row['enddate']; else echo '&nbsp;' ?></td>         
+     <td><?php echo $row['status_id'] ?></td>       
+     <td><?php if ($row['notes']) echo $row['notes']; else echo '&nbsp;' ?></td>       
+</tr>
+
+<?php endforeach; ?>
+
+</table>
+
+<?php 
+    if (sizeof($myholding['Bib']['Bid']) == 0)
+    {
+       echo "No bids present. ";
+       echo  $html->link('Place bid', '/Bibs/index/', array('target' => '_blank') );
+       echo " <small>(new window)</small.";
+    }
+?>
+
+
+
