@@ -4,3 +4,9 @@
    RewriteRule    ^$ app/webroot/    [L]
    RewriteRule    (.*) app/webroot/$1 [L]
 </IfModule>
+
+# block google & bing
+BrowserMatchNoCase bingbot bad_bot
+BrowserMatchNoCase googlebot bad_bot
+Order Deny,Allow
+Deny from env=bad_bot
