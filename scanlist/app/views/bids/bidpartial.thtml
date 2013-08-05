@@ -14,10 +14,10 @@
     <input type="hidden" name="data[Bid][status_id]" id="data[Bid][status_id]" value="1" />
 
 	    <p><b>Start date: </b>
-	 <?php echo $html->yearOptionTag('Bid/startdate',null,1700,2007,1700);?> 		
+	 <?php echo $html->yearOptionTag('Bid/startdate',null,1700,date('Y'),1700);?> 		
     </p>
      <p><b>End date: </b>
-        <?php echo $html->yearOptionTag('Bid/enddate',null,1700,2007,1923);?> 	 		
+        <?php echo $html->yearOptionTag('Bid/enddate',null,1700,date('Y'),1923);?> 	 		
     </p>
 
      <p>

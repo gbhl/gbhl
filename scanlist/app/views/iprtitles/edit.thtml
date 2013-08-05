@@ -122,10 +122,10 @@ $html->addCrumb('return to titles','/titles/index');
     <p>If entire date range is not available, please select the range that is IPR clear:</p>
     
    <p><b>Partial date range - start year IPR is clear from: </b>
-	 <?php echo $html->yearOptionTag('Iprtitle/partial_dates_start','',1700,2007,$iprtitle['Iprtitle']['partial_dates_start']);?> 		
+	 <?php echo $html->yearOptionTag('Iprtitle/partial_dates_start','',1700,date('Y'),$iprtitle['Iprtitle']['partial_dates_start']);?> 		
     </p>
      <p><b>Partial date range - end year IPR is clear until: </b>
-        <?php echo $html->yearOptionTag('Iprtitle/partial_dates_end','',1700,2007,$iprtitle['Iprtitle']['partial_dates_end']);?> 	 		
+        <?php echo $html->yearOptionTag('Iprtitle/partial_dates_end','',1700,date('Y'),$iprtitle['Iprtitle']['partial_dates_end']);?> 	 		
     </p>
 
      <p>

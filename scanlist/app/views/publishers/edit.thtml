@@ -94,10 +94,10 @@ $html->addCrumb('edit record',"/publishers/edit/$id");
 
 	
     <p><b>We can scan from (start date): </b>
-	 <?php echo $html->yearOptionTag('Publisher/agreement_start','',1700,2007,$bid['Bid']['startdate']);?> 		
+	 <?php echo $html->yearOptionTag('Publisher/agreement_start','',1700,date('Y'),$bid['Bid']['startdate']);?> 		
     </p>
      <p><b>We can scan to (end date): </b>
-        <?php echo $html->yearOptionTag('Publisher/agreement_end','',1700,2007,$bid['Bid']['enddate']);?> 	 		
+        <?php echo $html->yearOptionTag('Publisher/agreement_end','',1700,date('Y'),$bid['Bid']['enddate']);?> 	 		
     </p>
 
 

@@ -17,10 +17,10 @@ $html->addCrumb('edit bid','/bids/edit');
 	
     <?php if($this->data['Bid']['partial'] == '0' ) echo '<!--'; ?>	
     <p><b>Start date: </b>
-	 <?php echo $html->yearOptionTag('Bid/startdate','',1700,2007,$bid['Bid']['startdate']);?> 		
+	 <?php echo $html->yearOptionTag('Bid/startdate','',1700,date('Y'),$bid['Bid']['startdate']);?> 		
     </p>
      <p><b>End date: </b>
-        <?php echo $html->yearOptionTag('Bid/enddate','',1700,2007,$bid['Bid']['enddate']);?> 	 		
+        <?php echo $html->yearOptionTag('Bid/enddate','',1700,date('Y'),$bid['Bid']['enddate']);?> 	 		
     </p>
     <?php if($this->data['Bid']['partial'] == '0' ) echo '-->'; ?>	
     

@@ -132,12 +132,12 @@ $html->addCrumb('Add record','/publishers/addtitle');
 
        
       <p><b>Agreement start date: </b>
-	 <?php echo $html->yearOptionTag('Publisher/agreement_start','',1700,2007,$bid['Bid']['startdate']);?> 		
+	 <?php echo $html->yearOptionTag('Publisher/agreement_start','',1700,date('Y'),$bid['Bid']['startdate']);?> 		
        </p>
     
     
     <p><b>Agreement end date: </b>
-    	 <?php echo $html->yearOptionTag('Publisher/agreement_end','',1700,2007,$bid['Bid']['startdate']);?> 		
+    	 <?php echo $html->yearOptionTag('Publisher/agreement_end','',1700,date('Y'),$bid['Bid']['startdate']);?> 		
     </p>
        
       
